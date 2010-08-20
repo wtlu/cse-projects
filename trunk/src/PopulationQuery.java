@@ -118,8 +118,11 @@ public class PopulationQuery {
 			System.err.println("Usage: java PopulationQuery <filename> <x> <y> [ -v1 | -v2 | -v3 | -v4 | -v5]");
 			System.exit(1);
 		}
-		//for (int i = 0; i < 20; i++)
-		preprocess(args[0], options[0], options[1], options[2]);
+		for (int i = 0; i < 10; i++) {
+
+			preprocess(args[0], options[0], options[1], options[2]);
+
+		}
 
 		//Now for interactive queries
 		//Takes in 4 integer query, if not as such, will exit program.
@@ -190,21 +193,23 @@ public class PopulationQuery {
 		}
 
 		//For timing
+		
+		//		for (int i = 0; i < 1; i++) {
+		//			s =  System.currentTimeMillis();
 		long s,t;
-		for (int i = 0; i < 10; i++) {
-			s =  System.currentTimeMillis();
-			_usGrid = program.processData();
-			t = System.currentTimeMillis();
-			System.out.println("Computation (corner finding) took " + (t-s) + "ms");
-		}
+		s =  System.currentTimeMillis();
+		_usGrid = program.processData();
+		//			t = System.currentTimeMillis();
+		//System.out.println("Computation (corner finding) took " + (t-s) + "ms");
+		//		}
 		_totPopulation = _usGrid.population;
-		for (int i = 0; i < 1; i++) {
-			oneSec();
-			s =  System.currentTimeMillis();
-			_xyPopGrid = program.makeGrid(_usGrid);
-			t = System.currentTimeMillis();
-			System.out.println("Computation (grid making) took " + (t-s) + "ms");
-		}
+		//		for (int i = 0; i < 1; i++) {
+		//oneSec();
+		
+		_xyPopGrid = program.makeGrid(_usGrid);
+		t = System.currentTimeMillis();
+//		System.out.println("Computation (preprocess) took " + (t-s) + "ms");
+		//		}
 		_xyGrid = program.processPopulationToGrid(_usGrid, x, y);
 		//		System.out.println("The total population is (ver.1)" + _totPopulation);
 		//		System.out.println("Ver1 USGrid: " + _usGrid);

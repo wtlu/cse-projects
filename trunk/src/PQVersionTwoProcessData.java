@@ -14,7 +14,7 @@ import java.util.concurrent.ForkJoinPool;
 public class PQVersionTwoProcessData extends RecursiveTask<Rectangle> {
 
 
-	static final int SEQUENTIAL_THRESHOLD = 5000;
+	static final int SEQUENTIAL_THRESHOLD = 6580;
 	static final ForkJoinPool fjPool = new ForkJoinPool();
 
 

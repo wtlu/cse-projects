@@ -29,7 +29,11 @@ public class PQVersionThree extends PQVersionOne implements PQVersionBase{
 	
 	/** {@inheritDoc} */
 	public int[][] makeGrid(Rectangle USGrid) {
+		long s,t;
+		s =  System.currentTimeMillis();
 		int[][] result = makePopGrid(USGrid);
+		t = System.currentTimeMillis();
+		//System.out.println("Computation (grid making) took " + (t-s) + "ms");
 		result = makeModifiedPopGrid(result);
 		xyPopGrid = result;
 		return result;
