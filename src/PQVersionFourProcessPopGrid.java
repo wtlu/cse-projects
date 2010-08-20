@@ -14,7 +14,7 @@ import java.util.concurrent.RecursiveTask;
 @SuppressWarnings("serial")
 public class PQVersionFourProcessPopGrid extends RecursiveTask<int[][]> {
 
-	static final int SEQUENTIAL_THRESHOLD = 5000;
+	static final int SEQUENTIAL_THRESHOLD = 3290;
 	static final ForkJoinPool fjPool = new ForkJoinPool();
 
 	private CensusData data;
