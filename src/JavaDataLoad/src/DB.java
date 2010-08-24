@@ -210,6 +210,12 @@ public class DB {
         }
     }
     
+    public void insertDataMeta(Connection con, String tableName, int snapId, float time, int total, int dark, int gas, int star) {
+    	String input = " values(" + snapId +", " + time +", " 
+    	+ total +", " + dark +", " + gas +", " + star + ")";
+    	insertData(con, tableName, input);
+    }
+    
     public void insertDataDark(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float phi, float eps) {
     	String input = " values(" + iOrder +", " + mass +", " 
     	+ x +", " + y +", " + z +", " + vx +", " + vy +", " + vz +", " +
@@ -217,6 +223,22 @@ public class DB {
     	insertData(con, tableName, input);
     }
     
-    public void insertDataGas(Connection con, String tableName, int iOrder) {}
+    public void insertDataGas(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    		phi, float rho, float temp, float hsmooth, float metals) {
+    	String input = " values(" + iOrder +", " + mass +", " 
+    	+ x +", " + y +", " + z +", " + vx +", " + vy +", " + vz +", " +
+    			+ phi +", " + rho +", "+ temp +", "+ hsmooth +", "+ metals + ")";
+    	insertData(con, tableName, input);
+    }
+    
+    public void insertDataStar(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    		phi, float metals, float tform, float eps) {
+    	String input = " values(" + iOrder +", " + mass +", " 
+    	+ x +", " + y +", " + z +", " + vx +", " + vy +", " + vz +", " +
+    			+ phi +", " + metals +", "+ tform +", "+ eps + ")";
+    	insertData(con, tableName, input);
+    }
+    
+    
 }
 
