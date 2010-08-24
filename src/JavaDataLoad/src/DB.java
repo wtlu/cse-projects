@@ -65,19 +65,117 @@ public class DB {
             e.printStackTrace();
         }
     }
-    public void createTablesStars(Connection conn)
+    
+    public void createTablesMeta(Connection conn, String name)
     {
         String query;
         Statement stmt;
         
         try
         {
-                query="create table wtlcust_profile " +
-                "(name varchar(32), " +
-                "address1 varchar(50), " +
-                "city varchar(50), " +
-                "state varchar(50), " +
-                "country varchar(50))";
+                query="create table " + 
+                name +
+                " (snapshot_id int, " +
+                "time float, " +
+                "total int, " +
+                "dark int, " +
+                "gas int, " +
+                "star int)";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(query);
+                stmt.close();
+                conn.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public void createTablesDark(Connection conn, String name)
+    {
+        String query;
+        Statement stmt;
+        
+        try
+        {
+                query="create table " + 
+                name +
+                " (iOrder int, " +
+                "mass float, " +
+                "x float, " +
+                "y float, " +
+                "z float, " +
+                "vx float, " +
+                "vy float, " +
+                "vz float, " +
+                "phi float, " +
+                "eps float)";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(query);
+                stmt.close();
+                conn.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public void createTablesGas(Connection conn, String name)
+    {
+        String query;
+        Statement stmt;
+        
+        try
+        {
+                query="create table " +
+                name +
+                " (iOrder int, " +
+                "mass float, " +
+                "x float, " +
+                "y float, " +
+                "z float, " +
+                "vx float, " +
+                "vy float, " +
+                "vz float, " +
+                "phi float, " +
+                "rho float, " +
+                "temp float, " +
+                "hsmooth float, " +
+                "metals float)";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(query);
+                stmt.close();
+                conn.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public void createTablesStar(Connection conn, String name)
+    {
+        String query;
+        Statement stmt;
+        
+        try
+        {
+                query="create table " +
+                name +
+                " (iOrder int, " +
+                "mass float, " +
+                "x float, " +
+                "y float, " +
+                "z float, " +
+                "vx float, " +
+                "vy float, " +
+                "vz float, " +
+                "phi float, " +
+                "metals float, " +
+                "tform float, " +
+                "eps float)";
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();

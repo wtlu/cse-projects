@@ -11,6 +11,7 @@ public class DataLoadPipeline {
 		DB db = new DB();
 		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
 		db.createTables(con);
+		db.createTablesDark(con, "wtltest-DarkJava");
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 }
