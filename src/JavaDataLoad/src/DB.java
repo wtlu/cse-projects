@@ -38,5 +38,9 @@ public class DB {
 			e.printStackTrace();
 		}
 	}
+	
+	public void createTable() {
+		System.out.println("Doesn't do anything yet");
+	}
 }
 
