@@ -194,5 +194,28 @@ public class DB {
             e.printStackTrace();
         }
     }
+    
+    public void insertData(Connection conn, String tableName, String statement)
+    {
+        Statement stmt;
+        try
+        {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("insert into " + tableName + statement);   
+            stmt.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public void insertDataDark(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float phi, float eps) {
+    	String input = " values(" + iOrder +", " + mass +", " 
+    	+ x +", " + y +", " + z +", " + vx +", " + vy +", " + vz +", " +
+    			+ phi +", " + eps + ")";
+    	insertData(con, tableName, input);
+    }
+    
 }
 
