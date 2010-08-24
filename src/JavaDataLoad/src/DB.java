@@ -217,5 +217,6 @@ public class DB {
     	insertData(con, tableName, input);
     }
     
+    public void insertDataGas(Connection con, String tableName, int iOrder) {}
 }
 
