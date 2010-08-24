@@ -42,7 +42,15 @@ public class DB {
 		return conn;
 	}
 	
-    public void createTables(Connection conn)
+	public void dbClose(Connection conn) {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    public void createTablesTest(Connection conn)
     {
         String query;
         Statement stmt;
@@ -58,7 +66,7 @@ public class DB {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();
-                conn.close();
+//                conn.close();
         }
         catch (Exception e)
         {
@@ -84,7 +92,7 @@ public class DB {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();
-                conn.close();
+//                conn.close();
         }
         catch (Exception e)
         {
@@ -114,7 +122,7 @@ public class DB {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();
-                conn.close();
+                //conn.close();
         }
         catch (Exception e)
         {
@@ -147,7 +155,7 @@ public class DB {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();
-                conn.close();
+                //conn.close();
         }
         catch (Exception e)
         {
@@ -179,7 +187,7 @@ public class DB {
                 stmt = conn.createStatement();
                 stmt.executeUpdate(query);
                 stmt.close();
-                conn.close();
+//                conn.close();
         }
         catch (Exception e)
         {
