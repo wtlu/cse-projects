@@ -53,6 +53,8 @@ public class DataLoadPipeline {
 		
 		
 		// Process gas particles
+		db.createTablesGas(con, "wtltest_GasJava"); //create gas table
+		
 		buffer = ByteBuffer.allocate(48);
 		for (int i = 0; i < 10; i++) {
 			if (fc.read(buffer) == -1) {
