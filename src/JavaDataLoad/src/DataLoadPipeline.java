@@ -1,14 +1,48 @@
 import java.sql.*;
+import java.io.FileInputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class DataLoadPipeline {
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Welcome to DataLoadPipeline");
 		System.out.println("This is just a test");
 		DB db = new DB();
+		
+		if (args.length != 1) {
+			System.err.println("Usage: Java DataLoadPipline <tipsyfile>");
+			System.exit(1);
+		}
+		String file = args[0];
+		FileInputStream fis = new FileInputStream(file);
+		FileChannel fc = fis.getChannel();
+		ByteBuffer buffer = ByteBuffer.allocate(48);
+		
+		if (fc.read(buffer) == -1) {
+			System.err.println("Error reading from in-channel");
+			System.exit(1);
+		}
+		// Flip buffer 
+		buffer.flip();
+		// Following is the specified format, but wrong:
+			// what exactly is ntot? I assume that ndim means number of dimensions
+			// there are 2097152 lines in particle_gas.csv and 1927510 lines in particle_dark.csv
+			// but the header says time=7.2731407807596E-310, ndim=3, ntot=2097152, ngas=2097152, ndark=0, nstar=0.
+			// what to do?
+		// Get 4 padding bytes
+		buffer.getFloat();
+		double time = buffer.getDouble();
+		int ndim = buffer.getInt();
+		int ntot = buffer.getInt();
+		int ngas = buffer.getInt();
+		int ndark = buffer.getInt();
+		int nstar = buffer.getInt();
+		System.out.println("time:\t" + time + "\nndim:\t" + ndim +  "\nntot:\t" + ntot + "\nngas:\t" + ngas + "\nndark:\t" + ndark + "\nnstar\t" + nstar);
+		
 		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
 		//db.createTables(con);
 //		db.createTablesDark(con, "wtltest_DarkJava");
