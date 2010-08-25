@@ -20,7 +20,8 @@ public class DataLoadPipeline {
 		String file = args[0];
 		FileInputStream fis = new FileInputStream(file);
 		FileChannel fc = fis.getChannel();
-		ByteBuffer buffer = ByteBuffer.allocate(48);
+		
+		ByteBuffer buffer = ByteBuffer.allocate(32);
 		
 		if (fc.read(buffer) == -1) {
 			System.err.println("Error reading from in-channel");
@@ -34,14 +35,42 @@ public class DataLoadPipeline {
 			// but the header says time=7.2731407807596E-310, ndim=3, ntot=2097152, ngas=2097152, ndark=0, nstar=0.
 			// what to do?
 		// Get 4 padding bytes
-		buffer.getFloat();
-		double time = buffer.getDouble();
+		buffer.getInt();
+		float time = buffer.getFloat();
 		int ndim = buffer.getInt();
 		int ntot = buffer.getInt();
 		int ngas = buffer.getInt();
 		int ndark = buffer.getInt();
 		int nstar = buffer.getInt();
+		buffer.getInt();
 		System.out.println("time:\t" + time + "\nndim:\t" + ndim +  "\nntot:\t" + ntot + "\nngas:\t" + ngas + "\nndark:\t" + ndark + "\nnstar\t" + nstar);
+		buffer.clear();
+		
+		
+		// Process gas particles
+		buffer = ByteBuffer.allocate(48);
+		for (int i = 0; i < ngas; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+				System.exit(1);
+			}
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float rho = buffer.getFloat();
+			float temp = buffer.getFloat();
+			float hsmooth = buffer.getFloat();
+			float metals = buffer.getFloat();
+			float phi = buffer.getFloat();
+			System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
+			buffer.clear();
+		}
+		
 		
 		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
 		//db.createTables(con);
