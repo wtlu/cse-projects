@@ -54,13 +54,17 @@ public class DataLoadPipeline {
 		
 		// Process gas particles
 		db.createTablesGas(con, "wtltest_GasJava"); //create gas table
-		
+		long s,t;
+		s = System.currentTimeMillis();
+
 		buffer = ByteBuffer.allocate(48);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < ngas; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
 				System.exit(1);
 			}
+			if (i % 10000 == 0)
+				System.out.println("Now at " + i);
 			buffer.flip();
 			float mass = buffer.getFloat();
 			float x = buffer.getFloat();
@@ -78,7 +82,10 @@ public class DataLoadPipeline {
 			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
 			buffer.clear();
 		}
-		
+		t = System.currentTimeMillis();
+		//test took 2604100ms = 43.40167 minutes
+		System.out.println("Insertion took " + (t-s) + "ms");
+
 		
 		
 		//db.createTables(con);
