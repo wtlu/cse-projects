@@ -13,6 +13,11 @@ public class DataLoadPipeline {
 		System.out.println("This is just a test");
 		DB db = new DB();
 		
+		
+		//Set up for db connection
+		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+		
+		//Set up for reading buffer
 		if (args.length != 1) {
 			System.err.println("Usage: Java DataLoadPipline <tipsyfile>");
 			System.exit(1);
@@ -49,7 +54,7 @@ public class DataLoadPipeline {
 		
 		// Process gas particles
 		buffer = ByteBuffer.allocate(48);
-		for (int i = 0; i < ngas; i++) {
+		for (int i = 0; i < 10; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
 				System.exit(1);
@@ -67,23 +72,24 @@ public class DataLoadPipeline {
 			float hsmooth = buffer.getFloat();
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
-			System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
+			db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
 			buffer.clear();
 		}
 		
 		
-		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+		
 		//db.createTables(con);
 //		db.createTablesDark(con, "wtltest_DarkJava");
 //		db.createTablesGas(con, "wtltest_GasJava");
 //		db.createTablesStar(con, "wtltest_StarJava");
 //		db.createTablesMeta(con, "wtltest_metaJava");
-		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
-				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
-		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
-		db.dbClose(con);
+//		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
+//				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
+//		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+//		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+//		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
+//		db.dbClose(con);
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 }
