@@ -216,7 +216,7 @@ public class DB {
     
     public void prepareGasStatement(Connection conn, String tableName) {
     	try {
-			insertGas = conn.prepareStatement("insert into ? values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			insertGas = conn.prepareStatement("insert into ? values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			insertGas.setString(1, tableName);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
