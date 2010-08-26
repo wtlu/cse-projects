@@ -60,13 +60,15 @@ public class DataLoadPipeline {
 		s = System.currentTimeMillis();
 
 		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
+			
+		//now loop and get data from buffer
 		for (int i = 0; i < ngas; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
 				System.exit(1);
 			}
 			if (i % 9999 == 0) {
-				System.out.println("Now at " + i);
+//				System.out.println("Now at " + i);
 				db.executePreparedGas(con);
 			}
 				
@@ -84,13 +86,16 @@ public class DataLoadPipeline {
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
 			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
-			db.insertGasPrepared(con, tableName, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
 			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
+			
 			buffer.clear();
 		}
+		db.executePreparedGas(con);
 		db.closePreparedGas(con);
 		t = System.currentTimeMillis();
-		//test took 2604100ms = 43.40167 minutes
+		//test(using individual insert) took 2604100ms = 43.40167 minutes
+		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
 		System.out.println("Insertion took " + (t-s) + "ms");
 
 		

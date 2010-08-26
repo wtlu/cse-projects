@@ -216,30 +216,28 @@ public class DB {
     
     public void prepareGasStatement(Connection conn, String tableName) {
     	try {
-			insertGas = conn.prepareStatement("insert into ? values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			insertGas.setString(1, tableName);
+			insertGas = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
-    public void insertGasPrepared(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    public void insertGasPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
     		phi, float rho, float temp, float hsmooth, float metals) {
     	try {
-			insertGas.setString(1, tableName);
-			insertGas.setInt(2, iOrder);
-			insertGas.setFloat(3, mass);
-			insertGas.setFloat(4, x);
-			insertGas.setFloat(5, y);
-			insertGas.setFloat(6, z);
-			insertGas.setFloat(7, vx);
-			insertGas.setFloat(8, vy);
-			insertGas.setFloat(9, vz);
-			insertGas.setFloat(10, phi);
-			insertGas.setFloat(11, rho);
-			insertGas.setFloat(12, temp);
-			insertGas.setFloat(13, hsmooth);
-			insertGas.setFloat(14, metals);
+			insertGas.setInt(1, iOrder);
+			insertGas.setFloat(2, mass);
+			insertGas.setFloat(3, x);
+			insertGas.setFloat(4, y);
+			insertGas.setFloat(5, z);
+			insertGas.setFloat(6, vx);
+			insertGas.setFloat(7, vy);
+			insertGas.setFloat(8, vz);
+			insertGas.setFloat(9, phi);
+			insertGas.setFloat(10, rho);
+			insertGas.setFloat(11, temp);
+			insertGas.setFloat(12, hsmooth);
+			insertGas.setFloat(13, metals);
 			insertGas.addBatch();
 			
 		} catch (SQLException e) {
@@ -253,6 +251,7 @@ public class DB {
     	try {
 			insertGas.executeBatch();
 			conn.commit();
+			insertGas.clearBatch();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
