@@ -66,7 +66,7 @@ public class DataLoadPipeline {
 			}
 			if (i % 9999 == 0) {
 				System.out.println("Now at " + i);
-				db.executePrepared(con);
+				db.executePreparedGas(con);
 			}
 				
 			buffer.flip();
@@ -87,7 +87,7 @@ public class DataLoadPipeline {
 			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
 			buffer.clear();
 		}
-		db.closePrepared(con);
+		db.closePreparedGas(con);
 		t = System.currentTimeMillis();
 		//test took 2604100ms = 43.40167 minutes
 		System.out.println("Insertion took " + (t-s) + "ms");
