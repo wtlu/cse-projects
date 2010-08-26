@@ -53,8 +53,9 @@ public class DataLoadPipeline {
 		
 		
 		// Process gas particles
-		db.createTablesGas(con, "wtltest_GasJava"); //create gas table
-		db.prepareGasStatement(con, "wtltest_GasJava");
+		String tableName = "wtltest_GasJava";
+		db.createTablesGas(con, tableName); //create gas table
+		db.prepareGasStatement(con, tableName);
 		long s,t;
 		s = System.currentTimeMillis();
 
@@ -83,7 +84,7 @@ public class DataLoadPipeline {
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
 			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
-			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			db.insertGasPrepared(con, tableName, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
 			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
 			buffer.clear();
 		}
