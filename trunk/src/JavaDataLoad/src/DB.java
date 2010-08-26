@@ -223,10 +223,10 @@ public class DB {
 			e.printStackTrace();
 		}
     }
-    public void insertGasPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    public void insertGasPrepared(Connection con, String tableName, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
     		phi, float rho, float temp, float hsmooth, float metals) {
     	try {
-			//insertGas.setString(1, tableName);
+			insertGas.setString(1, tableName);
 			insertGas.setInt(2, iOrder);
 			insertGas.setFloat(3, mass);
 			insertGas.setFloat(4, x);
