@@ -9,6 +9,8 @@ import java.sql.*;
 public class DB {
 	
 //	private Connection con; //The connection object
+	
+	private PreparedStatement insertGas;
 	public DB() {
 //		con = null;
 	}
@@ -31,6 +33,8 @@ public class DB {
 			conn = DriverManager.getConnection(
 					db_connect_string, db_userid, db_password);
 //			con = conn;
+			conn.setAutoCommit(false);
+			
 			System.out.println("connected");
 			return conn;
 
@@ -201,7 +205,7 @@ public class DB {
         try
         {
             stmt = conn.createStatement();
-            stmt.executeUpdate("insert into " + tableName + statement);   
+            stmt.executeUpdate("insert into " + tableName + statement);           
             stmt.close();
         }
         catch (Exception e)
@@ -210,6 +214,59 @@ public class DB {
         }
     }
     
+    public void prepareGasStatement(Connection conn, String tableName) {
+    	try {
+			insertGas = conn.prepareStatement("insert into ? values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			insertGas.setString(1, tableName);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    public void insertGasPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    		phi, float rho, float temp, float hsmooth, float metals) {
+    	try {
+			//insertGas.setString(1, tableName);
+			insertGas.setInt(2, iOrder);
+			insertGas.setFloat(3, mass);
+			insertGas.setFloat(4, x);
+			insertGas.setFloat(5, y);
+			insertGas.setFloat(6, z);
+			insertGas.setFloat(7, vx);
+			insertGas.setFloat(8, vy);
+			insertGas.setFloat(9, vz);
+			insertGas.setFloat(10, phi);
+			insertGas.setFloat(11, rho);
+			insertGas.setFloat(12, temp);
+			insertGas.setFloat(13, hsmooth);
+			insertGas.setFloat(14, metals);
+			insertGas.addBatch();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    public void executePrepared(Connection conn) {
+    	try {
+			insertGas.executeBatch();
+			conn.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+    }
+    
+    public void closePrepared(Connection conn) {
+    	try {
+			insertGas.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     public void insertDataMeta(Connection con, String tableName, int snapId, float time, int total, int dark, int gas, int star) {
     	String input = " values(" + snapId +", " + time +", " 
     	+ total +", " + dark +", " + gas +", " + star + ")";

@@ -54,17 +54,21 @@ public class DataLoadPipeline {
 		
 		// Process gas particles
 		db.createTablesGas(con, "wtltest_GasJava"); //create gas table
+		db.prepareGasStatement(con, "wtltest_GasJava");
 		long s,t;
 		s = System.currentTimeMillis();
 
-		buffer = ByteBuffer.allocate(48);
+		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
 		for (int i = 0; i < ngas; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
 				System.exit(1);
 			}
-			if (i % 10000 == 0)
+			if (i % 9999 == 0) {
 				System.out.println("Now at " + i);
+				db.executePrepared(con);
+			}
+				
 			buffer.flip();
 			float mass = buffer.getFloat();
 			float x = buffer.getFloat();
@@ -78,10 +82,12 @@ public class DataLoadPipeline {
 			float hsmooth = buffer.getFloat();
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
-			db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
 			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
 			buffer.clear();
 		}
+		db.closePrepared(con);
 		t = System.currentTimeMillis();
 		//test took 2604100ms = 43.40167 minutes
 		System.out.println("Insertion took " + (t-s) + "ms");
@@ -98,7 +104,7 @@ public class DataLoadPipeline {
 //		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
 //		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
 //		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
-//		db.dbClose(con);
+		db.dbClose(con);
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 }
