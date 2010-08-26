@@ -249,7 +249,7 @@ public class DB {
     	
     }
     
-    public void executePrepared(Connection conn) {
+    public void executePreparedGas(Connection conn) {
     	try {
 			insertGas.executeBatch();
 			conn.commit();
@@ -259,7 +259,7 @@ public class DB {
 		}	
     }
     
-    public void closePrepared(Connection conn) {
+    public void closePreparedGas(Connection conn) {
     	try {
 			insertGas.close();
 		} catch (SQLException e) {
