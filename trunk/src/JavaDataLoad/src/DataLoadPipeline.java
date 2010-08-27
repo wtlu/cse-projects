@@ -6,6 +6,12 @@ import java.nio.channels.FileChannel;
 
 public class DataLoadPipeline {
 
+	
+	static final int META_INDEX = 0;
+	static final int GAS_INDEX = 1;
+	static final int DARK_INDEX = 2;
+	static final int STAR_INDEX = 3;
+	
 	/**
 	 * @param args
 	 */
@@ -35,11 +41,6 @@ public class DataLoadPipeline {
 		}
 		// Flip buffer 
 		buffer.flip();
-		// Following is the specified format, but wrong:
-			// what exactly is ntot? I assume that ndim means number of dimensions
-			// there are 2097152 lines in particle_gas.csv and 1927510 lines in particle_dark.csv
-			// but the header says time=7.2731407807596E-310, ndim=3, ntot=2097152, ngas=2097152, ndark=0, nstar=0.
-			// what to do?
 		// Get 4 padding bytes
 		buffer.getInt();
 		float time = buffer.getFloat();
@@ -54,61 +55,29 @@ public class DataLoadPipeline {
 		
 		
 		// Process gas particles
-		String tableName = "wtltest_GasJava";
-		db.createTablesGas(con, tableName); //create gas table
-		db.prepareGasStatement(con, tableName);
-		long s,t;
-		s = System.currentTimeMillis();
+		String tableNameGas = "wtltest_GasJava";
+		String tableNameDark = "wtltest_DarkJava";
+		String tableNameStar = "wtltest_StarJava";
+		
+		//create tables for the different particles
+		db.createTablesGas(con, tableNameGas); //create gas table
+		db.createTablesDark(con, tableNameDark); //create dark table
+		db.createTablesStar(con, tableNameStar); //create star table
+		
+		
+		//Create prepared statements for bulk insertion
+		db.prepareGasStatement(con, tableNameGas);
+		db.prepareDarkStatement(con, tableNameDark);
+		db.prepareStarStatement(con, tableNameStar);
 
 		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
 		
-		insertMeta();
-		insertGas(con, buffer, fc, nstar, db);
-		insertDark();
-		insertStar();
-		//now loop and get data from buffer
-//		for (int i = 0; i < ngas; i++) {
-//			if (fc.read(buffer) == -1) {
-//				System.err.println("Error: unexpected EOF");
-//				System.exit(1);
-//			}
-//			if (i % 9999 == 0) {
-////				System.out.println("Now at " + i);
-//				db.executePreparedGas(con);
-//			}
-//				
-//			buffer.flip();
-//			float mass = buffer.getFloat();
-//			float x = buffer.getFloat();
-//			float y = buffer.getFloat();
-//			float z = buffer.getFloat();
-//			float vx = buffer.getFloat();
-//			float vy = buffer.getFloat();
-//			float vz = buffer.getFloat();
-//			float rho = buffer.getFloat();
-//			float temp = buffer.getFloat();
-//			float hsmooth = buffer.getFloat();
-//			float metals = buffer.getFloat();
-//			float phi = buffer.getFloat();
-//			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
-//			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
-//			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
-//			
-//			buffer.clear();
-//		}
-//		db.executePreparedGas(con);
-//		db.closePreparedGas(con);
-//		t = System.currentTimeMillis();
-//		//test(using individual insert) took 2604100ms = 43.40167 minutes
-//		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
-//		System.out.println("Insertion took " + (t-s) + "ms");
-//
-//		
+//		insertMeta();
+		insertGas(con, buffer, fc, ngas, db);
+		insertDark(con, buffer, fc, ndark, db);
+		insertStar(con, buffer, fc, nstar, db);
 		
-		//db.createTables(con);
-//		db.createTablesDark(con, "wtltest_DarkJava");
-//		db.createTablesGas(con, "wtltest_GasJava");
-//		db.createTablesStar(con, "wtltest_StarJava");
+		
 //		db.createTablesMeta(con, "wtltest_metaJava");
 //		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
 //				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
@@ -119,13 +88,70 @@ public class DataLoadPipeline {
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 
-	private static void insertStar() {
-		// TODO Auto-generated method stub
-		
+	private static void insertStar(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db) throws IOException {
+		long s,t;
+		s = System.currentTimeMillis();
+		for (int i = 0; i < nstar; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+				System.exit(1);
+			}
+			if (i % 9999 == 0) {
+				//System.out.println("Now at " + i);
+				db.executePreparedStatement(con, STAR_INDEX);
+			}
+				
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float phi = buffer.getFloat();
+			float metals = buffer.getFloat();
+			float tform = buffer.getFloat();
+			float eps = buffer.getFloat();
+			db.insertStarPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, metals, tform, eps);	
+			buffer.clear();
+		}
+		db.executePreparedStatement(con, STAR_INDEX);
+		db.closePreparedStatement(con, STAR_INDEX);
+		t = System.currentTimeMillis();
+		System.out.println("Insertion (star) took " + (t-s) + "ms");
 	}
 
-	private static void insertDark() {
-		// TODO Auto-generated method stub
+	private static void insertDark(Connection con, ByteBuffer buffer, FileChannel fc, int ndark, DB db) throws IOException {
+		long s,t;
+		s = System.currentTimeMillis();
+		for (int i = 0; i < ndark; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+				System.exit(1);
+			}
+			if (i % 9999 == 0) {
+				//System.out.println("Now at " + i);
+				db.executePreparedStatement(con, DARK_INDEX);
+			}
+				
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float phi = buffer.getFloat();
+			float eps = buffer.getFloat();
+			db.insertDarkPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, eps);	
+			buffer.clear();
+		}
+		db.executePreparedStatement(con, DARK_INDEX);
+		db.closePreparedStatement(con, DARK_INDEX);
+		t = System.currentTimeMillis();
+		System.out.println("Insertion (dark) took " + (t-s) + "ms");
 		
 	}
 
@@ -139,7 +165,7 @@ public class DataLoadPipeline {
 			}
 			if (i % 9999 == 0) {
 //				System.out.println("Now at " + i);
-				db.executePreparedStatement(con, 0);
+				db.executePreparedStatement(con, GAS_INDEX);
 			}
 				
 			buffer.flip();
@@ -155,20 +181,15 @@ public class DataLoadPipeline {
 			float hsmooth = buffer.getFloat();
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
-			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
 			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
-			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
-			
 			buffer.clear();
 		}
-//		db.executePreparedGas(con);
-//		db.closePreparedGas(con);
-		db.executePreparedStatement(con, 0);
-		db.closePreparedStatement(con, 0);
+		db.executePreparedStatement(con, GAS_INDEX);
+		db.closePreparedStatement(con, GAS_INDEX);
 		t = System.currentTimeMillis();
 		//test(using individual insert) took 2604100ms = 43.40167 minutes
 		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
-		System.out.println("Insertion took " + (t-s) + "ms");
+		System.out.println("Insertion (gas) took " + (t-s) + "ms");
 
 		
 	}
