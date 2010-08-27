@@ -65,29 +65,6 @@ public class DB {
 			e.printStackTrace();
 		}
 	}
-    public void createTablesTest(Connection conn)
-    {
-        String query;
-        Statement stmt;
-        
-        try
-        {
-                query="create table wtlcust_profile " +
-                "(name varchar(32), " +
-                "address1 varchar(50), " +
-                "city varchar(50), " +
-                "state varchar(50), " +
-                "country varchar(50))";
-                stmt = conn.createStatement();
-                stmt.executeUpdate(query);
-                stmt.close();
-//                conn.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
     
     public void createTablesMeta(Connection conn, String name)
     {
@@ -225,10 +202,30 @@ public class DB {
         }
     }
     
+    public void executePreparedGas(Connection conn) {
+    	try {
+			insertGas.executeBatch();
+			conn.commit();
+			insertGas.clearBatch();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+    }
+    
+    public void closePreparedGas(Connection conn) {
+    	try {
+			insertGas.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
     public void prepareGasStatement(Connection conn, String tableName) {
     	try {
 			insertGas = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			statement[0] = insertGas;
+			statement[GAS_INDEX] = insertGas;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -238,7 +235,7 @@ public class DB {
     public void prepareDarkStatement(Connection conn, String tableName) {
     	try {
 			insertDark = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			statement[1] = insertDark;
+			statement[DARK_INDEX] = insertDark;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -248,7 +245,7 @@ public class DB {
     public void prepareStarStatement(Connection conn, String tableName) {
     	try {
 			insertStar = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			statement[2] = insertStar;
+			statement[STAR_INDEX] = insertStar;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -258,20 +255,6 @@ public class DB {
     public void insertGasPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
     		phi, float rho, float temp, float hsmooth, float metals) {
     	try {
-//			insertGas.setInt(1, iOrder);
-//			insertGas.setFloat(2, mass);
-//			insertGas.setFloat(3, x);
-//			insertGas.setFloat(4, y);
-//			insertGas.setFloat(5, z);
-//			insertGas.setFloat(6, vx);
-//			insertGas.setFloat(7, vy);
-//			insertGas.setFloat(8, vz);
-//			insertGas.setFloat(9, phi);
-//			insertGas.setFloat(10, rho);
-//			insertGas.setFloat(11, temp);
-//			insertGas.setFloat(12, hsmooth);
-//			insertGas.setFloat(13, metals);
-//			insertGas.addBatch();
     		statement[GAS_INDEX].setInt(1, iOrder);
     		statement[GAS_INDEX].setFloat(2, mass);
     		statement[GAS_INDEX].setFloat(3, x);
@@ -312,7 +295,6 @@ public class DB {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
     }
     
     public void insertStarPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
@@ -332,26 +314,6 @@ public class DB {
     		statement[STAR_INDEX].setFloat(12, eps);
     		statement[STAR_INDEX].addBatch();
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    }
-    public void executePreparedGas(Connection conn) {
-    	try {
-			insertGas.executeBatch();
-			conn.commit();
-			insertGas.clearBatch();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-    }
-    
-    public void closePreparedGas(Connection conn) {
-    	try {
-			insertGas.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
