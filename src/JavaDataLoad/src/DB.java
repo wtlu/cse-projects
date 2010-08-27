@@ -11,6 +11,17 @@ public class DB {
 //	private Connection con; //The connection object
 	
 	private PreparedStatement insertGas;
+	private PreparedStatement insertDark;
+	private PreparedStatement insertStar;
+	private PreparedStatement insertMeta;
+	private PreparedStatement[] statement = new PreparedStatement[4];
+	
+	static final int META_INDEX = 0;
+	static final int GAS_INDEX = 1;
+	static final int DARK_INDEX = 2;
+	static final int STAR_INDEX = 3;
+	
+	
 	public DB() {
 //		con = null;
 	}
@@ -217,28 +228,64 @@ public class DB {
     public void prepareGasStatement(Connection conn, String tableName) {
     	try {
 			insertGas = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement[0] = insertGas;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
+    
+    public void prepareDarkStatement(Connection conn, String tableName) {
+    	try {
+			insertDark = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement[1] = insertDark;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    public void prepareStarStatement(Connection conn, String tableName) {
+    	try {
+			insertStar = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement[2] = insertStar;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
     public void insertGasPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
     		phi, float rho, float temp, float hsmooth, float metals) {
     	try {
-			insertGas.setInt(1, iOrder);
-			insertGas.setFloat(2, mass);
-			insertGas.setFloat(3, x);
-			insertGas.setFloat(4, y);
-			insertGas.setFloat(5, z);
-			insertGas.setFloat(6, vx);
-			insertGas.setFloat(7, vy);
-			insertGas.setFloat(8, vz);
-			insertGas.setFloat(9, phi);
-			insertGas.setFloat(10, rho);
-			insertGas.setFloat(11, temp);
-			insertGas.setFloat(12, hsmooth);
-			insertGas.setFloat(13, metals);
-			insertGas.addBatch();
+//			insertGas.setInt(1, iOrder);
+//			insertGas.setFloat(2, mass);
+//			insertGas.setFloat(3, x);
+//			insertGas.setFloat(4, y);
+//			insertGas.setFloat(5, z);
+//			insertGas.setFloat(6, vx);
+//			insertGas.setFloat(7, vy);
+//			insertGas.setFloat(8, vz);
+//			insertGas.setFloat(9, phi);
+//			insertGas.setFloat(10, rho);
+//			insertGas.setFloat(11, temp);
+//			insertGas.setFloat(12, hsmooth);
+//			insertGas.setFloat(13, metals);
+//			insertGas.addBatch();
+    		statement[GAS_INDEX].setInt(1, iOrder);
+    		statement[GAS_INDEX].setFloat(2, mass);
+    		statement[GAS_INDEX].setFloat(3, x);
+    		statement[GAS_INDEX].setFloat(4, y);
+    		statement[GAS_INDEX].setFloat(5, z);
+    		statement[GAS_INDEX].setFloat(6, vx);
+    		statement[GAS_INDEX].setFloat(7, vy);
+    		statement[GAS_INDEX].setFloat(8, vz);
+    		statement[GAS_INDEX].setFloat(9, phi);
+    		statement[GAS_INDEX].setFloat(10, rho);
+    		statement[GAS_INDEX].setFloat(11, temp);
+    		statement[GAS_INDEX].setFloat(12, hsmooth);
+    		statement[GAS_INDEX].setFloat(13, metals);
+    		statement[GAS_INDEX].addBatch();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -247,6 +294,50 @@ public class DB {
     	
     }
     
+    public void insertDarkPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float phi, float eps) {
+    	try {
+    		statement[DARK_INDEX].setInt(1, iOrder);
+    		statement[DARK_INDEX].setFloat(2, mass);
+    		statement[DARK_INDEX].setFloat(3, x);
+    		statement[DARK_INDEX].setFloat(4, y);
+    		statement[DARK_INDEX].setFloat(5, z);
+    		statement[DARK_INDEX].setFloat(6, vx);
+    		statement[DARK_INDEX].setFloat(7, vy);
+    		statement[DARK_INDEX].setFloat(8, vz);
+    		statement[DARK_INDEX].setFloat(9, phi);
+    		statement[DARK_INDEX].setFloat(10, eps);
+    		statement[DARK_INDEX].addBatch();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    public void insertStarPrepared(Connection con, int iOrder, float mass, float x, float y, float z, float vx, float vy, float vz, float 
+    		phi, float metals, float tform, float eps) {
+    	try {
+    		statement[STAR_INDEX].setInt(1, iOrder);
+    		statement[STAR_INDEX].setFloat(2, mass);
+    		statement[STAR_INDEX].setFloat(3, x);
+    		statement[STAR_INDEX].setFloat(4, y);
+    		statement[STAR_INDEX].setFloat(5, z);
+    		statement[STAR_INDEX].setFloat(6, vx);
+    		statement[STAR_INDEX].setFloat(7, vy);
+    		statement[STAR_INDEX].setFloat(8, vz);
+    		statement[STAR_INDEX].setFloat(9, phi);
+    		statement[STAR_INDEX].setFloat(10, metals);
+    		statement[STAR_INDEX].setFloat(11, tform);
+    		statement[STAR_INDEX].setFloat(12, eps);
+    		statement[STAR_INDEX].addBatch();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
     public void executePreparedGas(Connection conn) {
     	try {
 			insertGas.executeBatch();
@@ -266,6 +357,28 @@ public class DB {
 			e.printStackTrace();
 		}
     }
+    
+    public void executePreparedStatement(Connection conn, int statementSwitch) {
+    	try {
+			statement[statementSwitch].executeBatch();
+			conn.commit();
+			statement[statementSwitch].clearBatch();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+    }
+    
+    public void closePreparedStatement(Connection conn, int statementSwitch) {
+    	try {
+    		statement[statementSwitch].close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
     public void insertDataMeta(Connection con, String tableName, int snapId, float time, int total, int dark, int gas, int star) {
     	String input = " values(" + snapId +", " + time +", " 
     	+ total +", " + dark +", " + gas +", " + star + ")";
