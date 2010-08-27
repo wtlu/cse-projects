@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -60,8 +61,77 @@ public class DataLoadPipeline {
 		s = System.currentTimeMillis();
 
 		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
-			
+		
+		insertMeta();
+		insertGas(con, buffer, fc, nstar, db);
+		insertDark();
+		insertStar();
 		//now loop and get data from buffer
+//		for (int i = 0; i < ngas; i++) {
+//			if (fc.read(buffer) == -1) {
+//				System.err.println("Error: unexpected EOF");
+//				System.exit(1);
+//			}
+//			if (i % 9999 == 0) {
+////				System.out.println("Now at " + i);
+//				db.executePreparedGas(con);
+//			}
+//				
+//			buffer.flip();
+//			float mass = buffer.getFloat();
+//			float x = buffer.getFloat();
+//			float y = buffer.getFloat();
+//			float z = buffer.getFloat();
+//			float vx = buffer.getFloat();
+//			float vy = buffer.getFloat();
+//			float vz = buffer.getFloat();
+//			float rho = buffer.getFloat();
+//			float temp = buffer.getFloat();
+//			float hsmooth = buffer.getFloat();
+//			float metals = buffer.getFloat();
+//			float phi = buffer.getFloat();
+//			//db.insertDataGas(con, "wtltest_GasJava", i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+//			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+//			//System.out.println("[mass="+mass+",x="+x+",y="+y+",z="+z+",vx="+vx+",vy="+vy+",vz="+vz+",rho="+rho+",temp="+temp+",hsmooth="+hsmooth+",metals="+metals+",phi="+phi+"]");
+//			
+//			buffer.clear();
+//		}
+//		db.executePreparedGas(con);
+//		db.closePreparedGas(con);
+//		t = System.currentTimeMillis();
+//		//test(using individual insert) took 2604100ms = 43.40167 minutes
+//		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
+//		System.out.println("Insertion took " + (t-s) + "ms");
+//
+//		
+		
+		//db.createTables(con);
+//		db.createTablesDark(con, "wtltest_DarkJava");
+//		db.createTablesGas(con, "wtltest_GasJava");
+//		db.createTablesStar(con, "wtltest_StarJava");
+//		db.createTablesMeta(con, "wtltest_metaJava");
+//		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
+//				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
+//		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+//		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+//		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
+		db.dbClose(con);
+		System.out.println("Connected, but now exiting, goodbye.");
+	}
+
+	private static void insertStar() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void insertDark() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void insertGas(Connection con, ByteBuffer buffer, FileChannel fc, int ngas, DB db) throws IOException {
+		long s,t;
+		s = System.currentTimeMillis();
 		for (int i = 0; i < ngas; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
@@ -69,7 +139,7 @@ public class DataLoadPipeline {
 			}
 			if (i % 9999 == 0) {
 //				System.out.println("Now at " + i);
-				db.executePreparedGas(con);
+				db.executePreparedStatement(con, 0);
 			}
 				
 			buffer.flip();
@@ -91,26 +161,20 @@ public class DataLoadPipeline {
 			
 			buffer.clear();
 		}
-		db.executePreparedGas(con);
-		db.closePreparedGas(con);
+//		db.executePreparedGas(con);
+//		db.closePreparedGas(con);
+		db.executePreparedStatement(con, 0);
+		db.closePreparedStatement(con, 0);
 		t = System.currentTimeMillis();
 		//test(using individual insert) took 2604100ms = 43.40167 minutes
 		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
 		System.out.println("Insertion took " + (t-s) + "ms");
 
 		
+	}
+
+	private static void insertMeta() {
+		// TODO Auto-generated method stub
 		
-		//db.createTables(con);
-//		db.createTablesDark(con, "wtltest_DarkJava");
-//		db.createTablesGas(con, "wtltest_GasJava");
-//		db.createTablesStar(con, "wtltest_StarJava");
-//		db.createTablesMeta(con, "wtltest_metaJava");
-//		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
-//				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
-//		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-//		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-//		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
-		db.dbClose(con);
-		System.out.println("Connected, but now exiting, goodbye.");
 	}
 }
