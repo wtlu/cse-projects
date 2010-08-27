@@ -71,13 +71,16 @@ public class DataLoadPipeline {
 		db.prepareStarStatement(con, tableNameStar);
 
 		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
-		
-//		insertMeta();
 		insertGas(con, buffer, fc, ngas, db);
 		
+//		insertMeta();
 		//inserted this much data: 1572864
 		//Insertion (dark) took 67006ms
+		
+		buffer = ByteBuffer.allocate(36);
 		insertDark(con, buffer, fc, ndark, db);
+		
+		buffer = ByteBuffer.allocate(44);
 		insertStar(con, buffer, fc, nstar, db);
 		
 		
