@@ -74,6 +74,9 @@ public class DataLoadPipeline {
 		
 //		insertMeta();
 		insertGas(con, buffer, fc, ngas, db);
+		
+		//inserted this much data: 1572864
+		//Insertion (dark) took 67006ms
 		insertDark(con, buffer, fc, ndark, db);
 		insertStar(con, buffer, fc, nstar, db);
 		
@@ -94,7 +97,9 @@ public class DataLoadPipeline {
 		for (int i = 0; i < nstar; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
-				System.exit(1);
+				System.out.println("inserted this much data: " + i);
+				break;
+				//System.exit(1);
 			}
 			if (i % 9999 == 0) {
 				//System.out.println("Now at " + i);
@@ -128,7 +133,9 @@ public class DataLoadPipeline {
 		for (int i = 0; i < ndark; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
-				System.exit(1);
+//				System.exit(1);
+				System.out.println("inserted this much data: " + i);
+				break;
 			}
 			if (i % 9999 == 0) {
 				//System.out.println("Now at " + i);
@@ -161,7 +168,9 @@ public class DataLoadPipeline {
 		for (int i = 0; i < ngas; i++) {
 			if (fc.read(buffer) == -1) {
 				System.err.println("Error: unexpected EOF");
-				System.exit(1);
+				System.out.println("inserted this much data: " + i);
+				break;
+				//System.exit(1);
 			}
 			if (i % 9999 == 0) {
 //				System.out.println("Now at " + i);
