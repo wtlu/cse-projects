@@ -119,12 +119,6 @@ fun unpack(lst, b) =
 		else reverse(unpackOne(hd(lst), b)) @ unpack(tl(lst),b)
 	end;
 
-(* 	Pre: y >= 0, y is even
-	Post: Returns (x^y mod n)
-*
-fun modPowEven(x, 0, n) = 1
-|	modPowEven(x, 2, n) = (x * x) mod n
-|	modPowEven(x, y, n) = (modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n;*)
 
 (* 	Pre: y >= 0
 	Post: Returns (x^y mod n)
