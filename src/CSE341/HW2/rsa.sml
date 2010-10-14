@@ -136,6 +136,37 @@ fun modPow(x, y, n) =
 		else modPowEven(x, y, n)
 	end;
 	
-	
-	
-	
+(* 	Pre: valid string
+	Post: Produces a list of encrypted integers based on five arguments
+	a string s, an integer key e, a modulus n, an integer per, and integer base
+	converts the string into a list or ordinal values, packs the values with
+	giveb base and given number of ordinals to pack, and then encrypts each 
+	integer x in the resultint list by replacing it with (x^e mod n)
+*)
+fun encrypt(s, e, n, per, base) = 
+	let
+		val lst = pack(stringToInts(s), per, base)
+		
+		(*encrypts the int of the lst to x^e mod n*)
+		fun encryptLst([], y, modn) = []
+		|	encryptLst(first::rest, y, modn) = modPow(first, y, modn)::encryptLst(rest,y, modn)
+	in
+		encryptLst(lst, e, n)
+	end;
+
+(* 	Pre: valid lst from encrpt
+	Post: produces a decrypted string based on lst of encrypted integers,
+	integer key d, integer modulus n, and integer base
+*)
+fun decrypt(lst, d, n, base) =
+	let
+		(*decrypts the ints of the list with x^d mod n*)
+		fun decryptLst([], y, modn) = []
+		|	decryptLst(first::rest, y, modn) = modPow(first, y, modn)::decryptLst(rest, y, modn)
+	in
+		intsToString(unpack(decryptLst(lst, d, n), base))
+	end;
+
+val message = "T";
+val code = encrypt(message, e, n, 2, 128);
+val decoded = decrypt(code, d, n, 128);
