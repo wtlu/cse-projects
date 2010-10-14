@@ -129,8 +129,11 @@ fun modPow(x, y, n) =
 			Post: Returns (x^y mod n)
 		*)	
 		fun modPowEven(x, 0, n) = 1
+		|	modPowEven(x, 1, n) = x mod n
 		|	modPowEven(x, 2, n) = (x * x) mod n
-		|	modPowEven(x, y, n) = (modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n;
+		|	modPowEven(x, y, n) = 
+				if y mod 2 = 1 then (((modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n)*(x mod n) ) mod n
+				else (modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n;
 	in
 		if y mod 2 = 1 then (modPowEven(x, y - 1, n) * (x mod n)) mod n
 		else modPowEven(x, y, n)
@@ -167,6 +170,6 @@ fun decrypt(lst, d, n, base) =
 		intsToString(unpack(decryptLst(lst, d, n), base))
 	end;
 
-val message = "T";
+val message = "Twas brillig and the slithy toves did gyre and gimble";
 val code = encrypt(message, e, n, 2, 128);
 val decoded = decrypt(code, d, n, 128);
