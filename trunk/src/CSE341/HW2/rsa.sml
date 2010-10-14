@@ -3,9 +3,16 @@
 	10/12/2010
 	TA: Robert Johnson 
 	Quiz Section: AA
-	HW1 - This program contains several short individual functions
+	HW2 - This program contains several short individual functions
 	      that combine to do RSA encryption
 *)
+
+
+val p = 131; 	(* first chosen prime for RSA encryption *)
+val q = 239; 	(* second prime chosen prime for RSA encryption *)
+val n = p * q; 	(* used for modulus *)
+val e = 1363; 	(* public key *)
+val d = 227; 	(* private key *)
 
 (* 	Pre: Strings made up of characters that have range 1 to 127 inclusive
 	Post: Returns a list of integers that represnet the ordinal
@@ -111,3 +118,30 @@ fun unpack(lst, b) =
 		if lst = [] then []
 		else reverse(unpackOne(hd(lst), b)) @ unpack(tl(lst),b)
 	end;
+
+(* 	Pre: y >= 0, y is even
+	Post: Returns (x^y mod n)
+*
+fun modPowEven(x, 0, n) = 1
+|	modPowEven(x, 2, n) = (x * x) mod n
+|	modPowEven(x, y, n) = (modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n;*)
+
+(* 	Pre: y >= 0
+	Post: Returns (x^y mod n)
+*)
+fun modPow(x, y, n) =
+	let
+		(* 	Pre: y >= 0, y is even
+			Post: Returns (x^y mod n)
+		*)	
+		fun modPowEven(x, 0, n) = 1
+		|	modPowEven(x, 2, n) = (x * x) mod n
+		|	modPowEven(x, y, n) = (modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n;
+	in
+		if y mod 2 = 1 then (modPowEven(x, y - 1, n) * (x mod n)) mod n
+		else modPowEven(x, y, n)
+	end;
+	
+	
+	
+	
