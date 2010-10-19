@@ -164,9 +164,12 @@ public class DataLoadPipeline {
 
 		System.out.println("USAGE:");
 		System.out.println("java DataLoadPipeline.jar -f <TIPSY_Binary_File> -iord <iOrder_file.iord> [ -print ]");
-		System.out.println("  [ -create ] -t <Table_Name> -host <Host_Name> -u <User_Name> -p <Password>");
+		System.out.println("  [ -create ] [ -a] -t <Table_Name> -host <Host_Name> -u <User_Name> -p <Password>");
 		System.out.println("    -- Load a TIPSY file with iOrder into the specified database.");
 		System.out.println("    -- The optional -print tells the program to print headers from TIPSY file without importing data");
+		System.out.println("    -- The optional -create tells the program create the table.");
+		System.out.println("    -- The optional -a tells the program to insert all types of particle into one big table");
+		System.out.println("    -- <Table_Name> specifies the name of table to insert.");
 		System.out.println("    -- <Host_Name> specifies the server to which the data is imported.");
 		System.out.println("    -- <User_Name> and <Password> specifies the login of the server.");
 	}
