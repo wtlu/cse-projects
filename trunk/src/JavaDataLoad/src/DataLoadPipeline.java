@@ -1,6 +1,8 @@
 import java.sql.*;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.*;
+//import java.io.FileInputStream;
+//import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -35,8 +37,8 @@ public class DataLoadPipeline {
 //		boolean gas = false;
 //		boolean dark = false;
 		boolean printHeader = false;
-		String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
-		
+		//String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
+		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null;
 		for ( ; i < args.length; ++i ) {
 			if ( args[i].charAt(0) != '-' ) {
 				bad = true;
@@ -60,6 +62,13 @@ public class DataLoadPipeline {
 			}
 		}
 		
+		
+		//Process the open iOrd file
+		Scanner iOrdInput = new Scanner(new File(iordFile));
+		int totalParticleNum = iOrdInput.nextInt();
+		
+		
+		//To initialize Database connection string
 		DB db = new DB();
 		
 		
@@ -96,6 +105,10 @@ public class DataLoadPipeline {
 		System.out.println("time:\t" + time + "\nndim:\t" + ndim +  "\nntot:\t" + ntot + "\nngas:\t" + ngas + "\nndark:\t" + ndark + "\nnstar\t" + nstar);
 		buffer.clear();
 		
+		//Check iOrdNum and ntot num and make sure they are the same
+		if (totalParticleNum != ntot)
+			System.out.println("Warning! The iOrd total particle number is " +
+					"different from the ntot in the tipsy file!!");
 		
 		// Process gas particles
 		String tableNameGas = "wtltest_GasJava";
@@ -114,17 +127,17 @@ public class DataLoadPipeline {
 		db.prepareStarStatement(con, tableNameStar);
 
 		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
-		insertGas(con, buffer, fc, ngas, db);
+		insertGas(con, buffer, fc, ngas, db, iOrdInput);
 		
 //		insertMeta();
 		//inserted this much data: 1572864
 		//Insertion (dark) took 67006ms
 		
 		buffer = ByteBuffer.allocate(36);
-		insertDark(con, buffer, fc, ndark, db);
+		insertDark(con, buffer, fc, ndark, db, iOrdInput);
 		
 		buffer = ByteBuffer.allocate(44);
-		insertStar(con, buffer, fc, nstar, db);
+		insertStar(con, buffer, fc, nstar, db, iOrdInput);
 		
 		
 //		db.createTablesMeta(con, "wtltest_metaJava");
@@ -137,7 +150,7 @@ public class DataLoadPipeline {
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 
-	private static void insertStar(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db) throws IOException {
+	private static void insertStar(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
 		s = System.currentTimeMillis();
 		for (int i = 0; i < nstar; i++) {
@@ -152,6 +165,9 @@ public class DataLoadPipeline {
 				db.executePreparedStatement(con, STAR_INDEX);
 			}
 				
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
 			buffer.flip();
 			float mass = buffer.getFloat();
 			float x = buffer.getFloat();
@@ -164,7 +180,7 @@ public class DataLoadPipeline {
 			float metals = buffer.getFloat();
 			float tform = buffer.getFloat();
 			float eps = buffer.getFloat();
-			db.insertStarPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, metals, tform, eps);	
+			db.insertStarPrepared(con, iOrdNum, mass, x, y, z, vx, vy, vz, phi, metals, tform, eps);	
 			buffer.clear();
 		}
 		db.executePreparedStatement(con, STAR_INDEX);
@@ -173,7 +189,7 @@ public class DataLoadPipeline {
 		System.out.println("Insertion (star) took " + (t-s) + "ms");
 	}
 
-	private static void insertDark(Connection con, ByteBuffer buffer, FileChannel fc, int ndark, DB db) throws IOException {
+	private static void insertDark(Connection con, ByteBuffer buffer, FileChannel fc, int ndark, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
 		s = System.currentTimeMillis();
 		for (int i = 0; i < ndark; i++) {
@@ -188,6 +204,9 @@ public class DataLoadPipeline {
 				db.executePreparedStatement(con, DARK_INDEX);
 			}
 				
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
 			buffer.flip();
 			float mass = buffer.getFloat();
 			float x = buffer.getFloat();
@@ -198,7 +217,7 @@ public class DataLoadPipeline {
 			float vz = buffer.getFloat();
 			float phi = buffer.getFloat();
 			float eps = buffer.getFloat();
-			db.insertDarkPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, eps);	
+			db.insertDarkPrepared(con, iOrdNum, mass, x, y, z, vx, vy, vz, phi, eps);	
 			buffer.clear();
 		}
 		db.executePreparedStatement(con, DARK_INDEX);
@@ -208,7 +227,7 @@ public class DataLoadPipeline {
 		
 	}
 
-	private static void insertGas(Connection con, ByteBuffer buffer, FileChannel fc, int ngas, DB db) throws IOException {
+	private static void insertGas(Connection con, ByteBuffer buffer, FileChannel fc, int ngas, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
 		s = System.currentTimeMillis();
 		for (int i = 0; i < ngas; i++) {
@@ -222,7 +241,10 @@ public class DataLoadPipeline {
 //				System.out.println("Now at " + i);
 				db.executePreparedStatement(con, GAS_INDEX);
 			}
-				
+			
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
 			buffer.flip();
 			float mass = buffer.getFloat();
 			float x = buffer.getFloat();
@@ -236,7 +258,7 @@ public class DataLoadPipeline {
 			float hsmooth = buffer.getFloat();
 			float metals = buffer.getFloat();
 			float phi = buffer.getFloat();
-			db.insertGasPrepared(con, i, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
+			db.insertGasPrepared(con, iOrdNum, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals);
 			buffer.clear();
 		}
 		db.executePreparedStatement(con, GAS_INDEX);
