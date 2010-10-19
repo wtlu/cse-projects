@@ -60,8 +60,10 @@ public class DataLoadPipeline {
 				bad = true;
 			}
 		}
-		
-		
+		if (bad) {
+			usage();
+			System.exit(1);
+		}
 		//Process the open iOrd file
 		Scanner iOrdInput = new Scanner(new File(iordFile));
 		int totalParticleNum = iOrdInput.nextInt();
