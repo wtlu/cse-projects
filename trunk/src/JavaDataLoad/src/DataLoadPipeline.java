@@ -127,6 +127,9 @@ public class DataLoadPipeline {
 			db.prepareGasStatement(con, tableNameGas);
 			db.prepareDarkStatement(con, tableNameDark);
 			db.prepareStarStatement(con, tableNameStar);
+			
+			//Create prepared statements for all particles for bulk insertion
+			db.prepareAllStatement(con, tableNameAll);
 
 			buffer = ByteBuffer.allocate(48); //bump it to 4 mb
 			insertGas(con, buffer, fc, ngas, db, iOrdInput);
