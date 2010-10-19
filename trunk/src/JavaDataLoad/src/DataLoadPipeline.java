@@ -35,7 +35,7 @@ public class DataLoadPipeline {
 //		boolean star = false;
 //		boolean gas = false;
 //		boolean dark = false;
-//		boolean printHeader = false;
+		boolean printHeader = false;
 		//String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
 		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null;
 		for ( ; i < args.length; ++i ) {
@@ -47,7 +47,7 @@ public class DataLoadPipeline {
 			} else if ( "-iord".equals(args[i]) ) {
 				iordFile = args[++i];
 			} else if ( "-print".equals(args[i]) ) {
-//				printHeader = true;
+				printHeader = true;
 			} else if ( "-host".equals(args[i]) ) {
 				hostName = args[++i];
 			} else if ( "-u".equals(args[i]) ) {
@@ -63,15 +63,6 @@ public class DataLoadPipeline {
 		//Process the open iOrd file
 		Scanner iOrdInput = new Scanner(new File(iordFile));
 		int totalParticleNum = iOrdInput.nextInt();
-		
-		
-		//To initialize Database connection string
-		DB db = new DB();
-		
-		
-		//Set up for db connection
-//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
-		Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
 		
 //		//Set up for reading buffer
 //		if (args.length != 1) {
@@ -113,6 +104,14 @@ public class DataLoadPipeline {
 		String tableNameGas = "wtltest_GasJava";
 		String tableNameDark = "wtltest_DarkJava";
 		String tableNameStar = "wtltest_StarJava";
+		
+		
+		//To initialize Database connection string
+		DB db = new DB();
+		
+		//Set up for db connection
+//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+		Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
 		
 		//create tables for the different particles
 		db.createTablesGas(con, tableNameGas); //create gas table
