@@ -78,7 +78,7 @@ public class DB {
                 query="create table " + 
                 name +
                 " (iOrder int, " +
-                "type varchar, " +
+                "type int, " +
                 "mass float, " +
                 "x float, " +
                 "y float, " +
@@ -294,7 +294,7 @@ public class DB {
     public void prepareAllStatement(Connection conn, String tableName) {
     	try {
 			insertAll = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			statement[STAR_INDEX] = insertAll;
+			statement[ALL_INDEX] = insertAll;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -369,11 +369,11 @@ public class DB {
 		}
     }
     
-    public void insertAllPrepared(Connection con, int iOrder, String type, float mass, float x, float y, float z, float vx, float vy, float vz, 
+    public void insertAllPrepared(Connection con, int iOrder, int type, float mass, float x, float y, float z, float vx, float vy, float vz, 
     		float phi, float rho, float temp, float hsmooth, float metals, float tform, float eps) {
     	try {
     		statement[ALL_INDEX].setInt(1, iOrder);
-    		statement[ALL_INDEX].setString(2, type);
+    		statement[ALL_INDEX].setInt(2, type);
     		statement[ALL_INDEX].setFloat(3, mass);
     		statement[ALL_INDEX].setFloat(4, x);
     		statement[ALL_INDEX].setFloat(5, y);
