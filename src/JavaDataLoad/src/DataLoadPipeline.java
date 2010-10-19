@@ -30,13 +30,8 @@ public class DataLoadPipeline {
 			// -table <tablename> | -create <tablename>
 		// (config file)
 		//usage();
-		boolean createTable = false;
-		boolean oneTable = false;
-//		boolean star = false;
-//		boolean gas = false;
-//		boolean dark = false;
-		boolean printHeader = false;
-		//String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
+
+		boolean printHeader = false, createTable = false, oneTable = false;
 		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null, tableName = null;
 		for (int i = 0; i < args.length; ++i ) {
 			if ( args[i].charAt(0) != '-' ) {
@@ -119,29 +114,28 @@ public class DataLoadPipeline {
 			//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
 			Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
 
-			if (createTable) {
-				if (oneTable)
-					//create table for all particle
-					db.createTableAll(con, tableName);
-				else {
-					//create tables for the different particles
-					db.createTablesGas(con, tableNameGas); //create gas table
-					db.createTablesDark(con, tableNameDark); //create dark table
-					db.createTablesStar(con, tableNameStar); //create star table
-				}
-			} else {
-				if (oneTable)
-					//Create prepared statements for all particles for bulk insertion
-					db.prepareAllStatement(con, tableName);
-				else {
-					//Create prepared statements for bulk insertion
-					db.prepareGasStatement(con, tableNameGas);
-					db.prepareDarkStatement(con, tableNameDark);
-					db.prepareStarStatement(con, tableNameStar);
-				}
+			if (createTable && oneTable) 
+				//create table for all particle
+				db.createTableAll(con, tableName);
+			else if (createTable){
+				//create tables for the different particles
+				db.createTablesGas(con, tableNameGas); //create gas table
+				db.createTablesDark(con, tableNameDark); //create dark table
+				db.createTablesStar(con, tableNameStar); //create star table
+			} 
+
+			if (oneTable)
+				//Create prepared statements for all particles for bulk insertion
+				db.prepareAllStatement(con, tableName);
+			else {
+				//Create prepared statements for bulk insertion
+				db.prepareGasStatement(con, tableNameGas);
+				db.prepareDarkStatement(con, tableNameDark);
+				db.prepareStarStatement(con, tableNameStar);
 			}
 
-			buffer = ByteBuffer.allocate(48); //bump it to 4 mb
+
+			buffer = ByteBuffer.allocate(48); //TODO: bump it to 4 mb
 			insertGas(con, buffer, fc, ngas, db, iOrdInput);
 
 			//		insertMeta();
