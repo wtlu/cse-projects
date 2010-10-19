@@ -13,6 +13,7 @@ public class DataLoadPipeline {
 	static final int GAS_INDEX = 1;
 	static final int DARK_INDEX = 2;
 	static final int STAR_INDEX = 3;
+	static final int ALL_INDEX = 4;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -124,29 +125,42 @@ public class DataLoadPipeline {
 				db.createTablesStar(con, tableNameStar); //create star table
 			} 
 
-			if (oneTable)
+			if (oneTable) {
 				//Create prepared statements for all particles for bulk insertion
 				db.prepareAllStatement(con, tableName);
+
+				buffer = ByteBuffer.allocate(48); //TODO: bump it to 4 mb
+				insertGasAll(con, buffer, fc, ngas, db, iOrdInput);
+
+				//		insertMeta();
+				//inserted this much data: 1572864
+				//Insertion (dark) took 67006ms
+
+				buffer = ByteBuffer.allocate(36);
+				insertDarkAll(con, buffer, fc, ndark, db, iOrdInput);
+
+				buffer = ByteBuffer.allocate(44);
+				insertStarAll(con, buffer, fc, nstar, db, iOrdInput);
+			}	
 			else {
 				//Create prepared statements for bulk insertion
 				db.prepareGasStatement(con, tableNameGas);
 				db.prepareDarkStatement(con, tableNameDark);
 				db.prepareStarStatement(con, tableNameStar);
+
+				buffer = ByteBuffer.allocate(48); //TODO: bump it to 4 mb
+				insertGas(con, buffer, fc, ngas, db, iOrdInput);
+
+				//		insertMeta();
+				//inserted this much data: 1572864
+				//Insertion (dark) took 67006ms
+
+				buffer = ByteBuffer.allocate(36);
+				insertDark(con, buffer, fc, ndark, db, iOrdInput);
+
+				buffer = ByteBuffer.allocate(44);
+				insertStar(con, buffer, fc, nstar, db, iOrdInput);
 			}
-
-
-			buffer = ByteBuffer.allocate(48); //TODO: bump it to 4 mb
-			insertGas(con, buffer, fc, ngas, db, iOrdInput);
-
-			//		insertMeta();
-			//inserted this much data: 1572864
-			//Insertion (dark) took 67006ms
-
-			buffer = ByteBuffer.allocate(36);
-			insertDark(con, buffer, fc, ndark, db, iOrdInput);
-
-			buffer = ByteBuffer.allocate(44);
-			insertStar(con, buffer, fc, nstar, db, iOrdInput);
 
 
 			//		db.createTablesMeta(con, "wtltest_metaJava");
@@ -294,7 +308,140 @@ public class DataLoadPipeline {
 
 		
 	}
+	private static void insertStarAll(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db, Scanner iOrdInput) throws IOException {
+		long s,t;
+		String type = "Star";
+		float rho = 0;
+		float temp = 0;
+		float hsmooth = 0;
+		
+		s = System.currentTimeMillis();
+		for (int i = 0; i < nstar; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+				System.out.println("inserted this much data: " + i);
+				break;
+				//System.exit(1);
+			}
+			if (i % 9999 == 0) {
+				//System.out.println("Now at " + i);
+				db.executePreparedStatement(con, ALL_INDEX);
+			}
+				
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float phi = buffer.getFloat();
+			float metals = buffer.getFloat();
+			float tform = buffer.getFloat();
+			float eps = buffer.getFloat();
+			db.insertAllPrepared(con, iOrdNum, type, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals, tform, eps);	
+			buffer.clear();
+		}
+		db.executePreparedStatement(con, ALL_INDEX);
+		db.closePreparedStatement(con, ALL_INDEX);
+		t = System.currentTimeMillis();
+		System.out.println("Insertion (star) took " + (t-s) + "ms");
+	}
 
+	private static void insertDarkAll(Connection con, ByteBuffer buffer, FileChannel fc, int ndark, DB db, Scanner iOrdInput) throws IOException {
+		long s,t;
+		String type = "Dark";
+		float rho = 0;
+		float temp = 0;
+		float hsmooth = 0;
+		float metals = 0;
+		float tform = 0;
+		s = System.currentTimeMillis();
+		for (int i = 0; i < ndark; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+//				System.exit(1);
+				System.out.println("inserted this much data: " + i);
+				break;
+			}
+			if (i % 9999 == 0) {
+				//System.out.println("Now at " + i);
+				db.executePreparedStatement(con, ALL_INDEX);
+			}
+				
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float phi = buffer.getFloat();
+			float eps = buffer.getFloat();
+			db.insertAllPrepared(con, iOrdNum, type, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals, tform, eps);		
+			buffer.clear();
+		}
+		db.executePreparedStatement(con, ALL_INDEX);
+		db.closePreparedStatement(con, ALL_INDEX);
+		t = System.currentTimeMillis();
+		System.out.println("Insertion (dark) took " + (t-s) + "ms");
+		
+	}
+
+	private static void insertGasAll(Connection con, ByteBuffer buffer, FileChannel fc, int ngas, DB db, Scanner iOrdInput) throws IOException {
+		long s,t;
+		String type = "Gas";
+		float tform = 0;
+		float eps = 0;
+		s = System.currentTimeMillis();
+		for (int i = 0; i < ngas; i++) {
+			if (fc.read(buffer) == -1) {
+				System.err.println("Error: unexpected EOF");
+				System.out.println("inserted this much data: " + i);
+				break;
+				//System.exit(1);
+			}
+			if (i % 9999 == 0) {
+//				System.out.println("Now at " + i);
+				db.executePreparedStatement(con, ALL_INDEX);
+			}
+			
+			//get nextIordID
+			int iOrdNum = iOrdInput.nextInt();
+			//Now get values from tipsy file
+			buffer.flip();
+			float mass = buffer.getFloat();
+			float x = buffer.getFloat();
+			float y = buffer.getFloat();
+			float z = buffer.getFloat();
+			float vx = buffer.getFloat();
+			float vy = buffer.getFloat();
+			float vz = buffer.getFloat();
+			float rho = buffer.getFloat();
+			float temp = buffer.getFloat();
+			float hsmooth = buffer.getFloat();
+			float metals = buffer.getFloat();
+			float phi = buffer.getFloat();
+			db.insertAllPrepared(con, iOrdNum, type, mass, x, y, z, vx, vy, vz, phi, rho, temp, hsmooth, metals, tform, eps);	
+			buffer.clear();
+		}
+		db.executePreparedStatement(con, ALL_INDEX);
+		db.closePreparedStatement(con, ALL_INDEX);
+		t = System.currentTimeMillis();
+		//test(using individual insert) took 2604100ms = 43.40167 minutes
+		//test2 (using bulk insert and prepared statements) took 96334 ms = 1.60556667 minutes
+		System.out.println("Insertion (gas) took " + (t-s) + "ms");
+
+		
+	}
 //	private static void insertMeta() {
 //		// TODO Auto-generated method stub
 //		
