@@ -31,13 +31,13 @@ public class DataLoadPipeline {
 		// (config file)
 		//usage();
 		int i = 0;
-//		boolean createTable = false;
+		boolean createTable = false;
 //		boolean star = false;
 //		boolean gas = false;
 //		boolean dark = false;
 		boolean printHeader = false;
 		//String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
-		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null;
+		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null, tableName = null;
 		for ( ; i < args.length; ++i ) {
 			if ( args[i].charAt(0) != '-' ) {
 				usage();
@@ -48,6 +48,10 @@ public class DataLoadPipeline {
 				iordFile = args[++i];
 			} else if ( "-print".equals(args[i]) ) {
 				printHeader = true;
+			} else if ( "-create".equals(args[i]) ) {
+				createTable = true;
+			} else if ( "-t".equals(args[i]) ) {
+				tableName = args[++i];
 			} else if ( "-host".equals(args[i]) ) {
 				hostName = args[++i];
 			} else if ( "-u".equals(args[i]) ) {
@@ -160,7 +164,7 @@ public class DataLoadPipeline {
 
 		System.out.println("USAGE:");
 		System.out.println("java DataLoadPipeline.jar -f <TIPSY_Binary_File> -iord <iOrder_file.iord> [ -print ]");
-		System.out.println("        -host <Host_Name> -u <User_Name> -p <Password>");
+		System.out.println("  [ -create ] -t <Table_Name> -host <Host_Name> -u <User_Name> -p <Password>");
 		System.out.println("    -- Load a TIPSY file with iOrder into the specified database.");
 		System.out.println("    -- The optional -print tells the program to print headers from TIPSY file without importing data");
 		System.out.println("    -- <Host_Name> specifies the server to which the data is imported.");
