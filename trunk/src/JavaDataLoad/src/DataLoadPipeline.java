@@ -43,8 +43,7 @@ public class DataLoadPipeline {
 			if ( args[i].charAt(0) != '-' ) {
 				bad = true;
 				break;
-			}
-			else if ( "-f".equals(args[i]) ) {
+			} if ( "-f".equals(args[i]) ) {
 				tipsyFile = args[++i];
 			} else if ( "-iord".equals(args[i]) ) {
 				iordFile = args[++i];
@@ -73,14 +72,16 @@ public class DataLoadPipeline {
 		
 		
 		//Set up for db connection
-		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+		Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
 		
-		//Set up for reading buffer
-		if (args.length != 1) {
-			System.err.println("Usage: Java DataLoadPipline <tipsyfile>");
-			System.exit(1);
-		}
-		String file = args[0];
+//		//Set up for reading buffer
+//		if (args.length != 1) {
+//			System.err.println("Usage: Java DataLoadPipline <tipsyfile>");
+//			System.exit(1);
+//		}
+//		String file = args[0];
+		String file = tipsyFile;
 		
 		
 		FileInputStream fis = new FileInputStream(file);
