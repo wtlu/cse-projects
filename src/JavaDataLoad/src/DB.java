@@ -14,12 +14,14 @@ public class DB {
 	private PreparedStatement insertDark;
 	private PreparedStatement insertStar;
 //	private PreparedStatement insertMeta;
-	private PreparedStatement[] statement = new PreparedStatement[4];
+	private PreparedStatement insertAll;
+	private PreparedStatement[] statement = new PreparedStatement[5];
 	
 	static final int META_INDEX = 0;
 	static final int GAS_INDEX = 1;
 	static final int DARK_INDEX = 2;
 	static final int STAR_INDEX = 3;
+	static final int ALL_INDEX = 4;
 	
 	
 	public DB() {
@@ -66,6 +68,43 @@ public class DB {
 		}
 	}
     
+	//This method will create table that would include all particles
+	public void createTableAll(Connection conn, String name) {
+        String query;
+        Statement stmt;
+        
+        try
+        {
+                query="create table " + 
+                name +
+                " (iOrder int, " +
+                "type varchar, " +
+                "mass float, " +
+                "x float, " +
+                "y float, " +
+                "z float, " +
+                "vx float, " +
+                "vy float, " +
+                "vz float, " +
+                "phi float, " +
+                "rho float, " +
+                "temp float, " +
+                "hsmooth float, " +
+                "metals float, " +
+                "phi float, " +
+                "tform float, " +
+                "eps float)";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(query);
+                stmt.close();
+                //conn.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+	}
+	
     public void createTablesMeta(Connection conn, String name)
     {
         String query;
@@ -246,6 +285,17 @@ public class DB {
     	try {
 			insertStar = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement[STAR_INDEX] = insertStar;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    //Create prepared statement for all particle types
+    public void prepareAllStatement(Connection conn, String tableName) {
+    	try {
+			insertAll = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement[STAR_INDEX] = insertAll;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

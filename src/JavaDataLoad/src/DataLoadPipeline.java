@@ -104,6 +104,7 @@ public class DataLoadPipeline {
 		String tableNameGas = "wtltest_GasJava";
 		String tableNameDark = "wtltest_DarkJava";
 		String tableNameStar = "wtltest_StarJava";
+		String tableNameAll = "wtltest_AllJava";
 		
 		if (!printHeader) {
 			//To initialize Database connection string
@@ -117,6 +118,9 @@ public class DataLoadPipeline {
 			db.createTablesGas(con, tableNameGas); //create gas table
 			db.createTablesDark(con, tableNameDark); //create dark table
 			db.createTablesStar(con, tableNameStar); //create star table
+			
+			//create table for all particle
+			db.createTableAll(con, tableNameAll);
 
 
 			//Create prepared statements for bulk insertion
