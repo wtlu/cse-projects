@@ -12,12 +12,54 @@ public class DataLoadPipeline {
 	static final int DARK_INDEX = 2;
 	static final int STAR_INDEX = 3;
 	
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Exception {
-		System.out.println("Welcome to DataLoadPipeline");
-		System.out.println("This is just a test");
+		
+		// input tipsy file
+			// -f <filename>
+		// iOrder file
+			// -iord <filename>
+		// type(s) of particle to load / print header
+			// -star | -gas | -dark | -all | -print
+		// db host, (port), user name
+			// -host <hostname>
+			// -u <username>
+			// -p <password>
+		// table name / create table first?
+			// -table <tablename> | -create <tablename>
+		// (config file)
+		
+		int i = 0;
+		boolean bad = false;
+		boolean createTable = false;
+//		boolean star = false;
+//		boolean gas = false;
+//		boolean dark = false;
+		boolean printHeader = false;
+		String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
+		
+		for ( ; i < args.length; ++i ) {
+			if ( args[i].charAt(0) != '-' ) {
+				bad = true;
+				break;
+			}
+			else if ( "-f".equals(args[i]) ) {
+				tipsyFile = args[++i];
+			} else if ( "-iord".equals(args[i]) ) {
+				iordFile = args[++i];
+			} else if ( "-print".equals(args[i]) ) {
+				printHeader = true;
+			} else if ( "-host".equals(args[i]) ) {
+				hostName = args[++i];
+			} else if ( "-u".equals(args[i]) ) {
+				userName = args[++i];
+			} else if ( "-p".equals(args[i]) ) {
+				password = args[++i];
+			} else {
+				System.err.println("Unknown option: "+args[i]);
+				bad = true;
+			}
+		}
+		
 		DB db = new DB();
 		
 		
@@ -30,9 +72,10 @@ public class DataLoadPipeline {
 			System.exit(1);
 		}
 		String file = args[0];
+		
+		
 		FileInputStream fis = new FileInputStream(file);
 		FileChannel fc = fis.getChannel();
-		
 		ByteBuffer buffer = ByteBuffer.allocate(32);
 		
 		if (fc.read(buffer) == -1) {
