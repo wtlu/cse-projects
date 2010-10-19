@@ -91,7 +91,6 @@ public class DB {
                 "temp float, " +
                 "hsmooth float, " +
                 "metals float, " +
-                "phi float, " +
                 "tform float, " +
                 "eps float)";
                 stmt = conn.createStatement();
@@ -294,7 +293,7 @@ public class DB {
     //Create prepared statement for all particle types
     public void prepareAllStatement(Connection conn, String tableName) {
     	try {
-			insertAll = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			insertAll = conn.prepareStatement("insert into "+tableName+" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement[STAR_INDEX] = insertAll;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -370,6 +369,32 @@ public class DB {
 		}
     }
     
+    public void insertAllPrepared(Connection con, int iOrder, String type, float mass, float x, float y, float z, float vx, float vy, float vz, 
+    		float phi, float rho, float temp, float hsmooth, float metals, float tform, float eps) {
+    	try {
+    		statement[ALL_INDEX].setInt(1, iOrder);
+    		statement[ALL_INDEX].setString(2, type);
+    		statement[ALL_INDEX].setFloat(3, mass);
+    		statement[ALL_INDEX].setFloat(4, x);
+    		statement[ALL_INDEX].setFloat(5, y);
+    		statement[ALL_INDEX].setFloat(6, z);
+    		statement[ALL_INDEX].setFloat(7, vx);
+    		statement[ALL_INDEX].setFloat(8, vy);
+    		statement[ALL_INDEX].setFloat(9, vz);
+    		statement[ALL_INDEX].setFloat(10, phi);
+    		statement[ALL_INDEX].setFloat(11, rho);
+    		statement[ALL_INDEX].setFloat(12, temp);
+    		statement[ALL_INDEX].setFloat(13, hsmooth);
+    		statement[ALL_INDEX].setFloat(14, metals);
+    		statement[ALL_INDEX].setFloat(15, tform);
+    		statement[ALL_INDEX].setFloat(16, eps);
+    		statement[ALL_INDEX].addBatch();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     public void executePreparedStatement(Connection conn, int statementSwitch) {
     	try {
 			statement[statementSwitch].executeBatch();
