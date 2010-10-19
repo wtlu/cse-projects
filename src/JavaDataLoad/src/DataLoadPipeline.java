@@ -310,7 +310,8 @@ public class DataLoadPipeline {
 	}
 	private static void insertStarAll(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
-		String type = "Star";
+//		String type = "Star";
+		int type = 1;
 		float rho = 0;
 		float temp = 0;
 		float hsmooth = 0;
@@ -354,7 +355,8 @@ public class DataLoadPipeline {
 
 	private static void insertDarkAll(Connection con, ByteBuffer buffer, FileChannel fc, int ndark, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
-		String type = "Dark";
+//		String type = "Dark";
+		int type = 2;
 		float rho = 0;
 		float temp = 0;
 		float hsmooth = 0;
@@ -398,7 +400,8 @@ public class DataLoadPipeline {
 
 	private static void insertGasAll(Connection con, ByteBuffer buffer, FileChannel fc, int ngas, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
-		String type = "Gas";
+//		String type = "Gas";
+		int type = 3;
 		float tform = 0;
 		float eps = 0;
 		s = System.currentTimeMillis();
