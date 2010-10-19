@@ -29,7 +29,7 @@ public class DataLoadPipeline {
 		// table name / create table first?
 			// -table <tablename> | -create <tablename>
 		// (config file)
-		usage();
+		//usage();
 		int i = 0;
 		boolean bad = false;
 		boolean createTable = false;
@@ -41,8 +41,8 @@ public class DataLoadPipeline {
 		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null;
 		for ( ; i < args.length; ++i ) {
 			if ( args[i].charAt(0) != '-' ) {
-				bad = true;
-				break;
+				usage();
+				System.exit(1);
 			} if ( "-f".equals(args[i]) ) {
 				tipsyFile = args[++i];
 			} else if ( "-iord".equals(args[i]) ) {
@@ -57,12 +57,9 @@ public class DataLoadPipeline {
 				password = args[++i];
 			} else {
 				System.err.println("Unknown option: "+args[i]);
-				bad = true;
+				usage();
+				System.exit(1);
 			}
-		}
-		if (bad) {
-			usage();
-			System.exit(1);
 		}
 		//Process the open iOrd file
 		Scanner iOrdInput = new Scanner(new File(iordFile));
