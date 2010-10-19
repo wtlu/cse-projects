@@ -13,7 +13,7 @@ public class DB {
 	private PreparedStatement insertGas;
 	private PreparedStatement insertDark;
 	private PreparedStatement insertStar;
-	private PreparedStatement insertMeta;
+//	private PreparedStatement insertMeta;
 	private PreparedStatement[] statement = new PreparedStatement[4];
 	
 	static final int META_INDEX = 0;
