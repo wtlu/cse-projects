@@ -105,51 +105,52 @@ public class DataLoadPipeline {
 		String tableNameDark = "wtltest_DarkJava";
 		String tableNameStar = "wtltest_StarJava";
 		
-		
-		//To initialize Database connection string
-		DB db = new DB();
-		
-		//Set up for db connection
-//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
-		Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
-		
-		//create tables for the different particles
-		db.createTablesGas(con, tableNameGas); //create gas table
-		db.createTablesDark(con, tableNameDark); //create dark table
-		db.createTablesStar(con, tableNameStar); //create star table
-		
-		
-		//Create prepared statements for bulk insertion
-		db.prepareGasStatement(con, tableNameGas);
-		db.prepareDarkStatement(con, tableNameDark);
-		db.prepareStarStatement(con, tableNameStar);
+		if (!printHeader) {
+			//To initialize Database connection string
+			DB db = new DB();
 
-		buffer = ByteBuffer.allocate(48); //bump it to 4 mb
-		insertGas(con, buffer, fc, ngas, db, iOrdInput);
-		
-//		insertMeta();
-		//inserted this much data: 1572864
-		//Insertion (dark) took 67006ms
-		
-		buffer = ByteBuffer.allocate(36);
-		insertDark(con, buffer, fc, ndark, db, iOrdInput);
-		
-		buffer = ByteBuffer.allocate(44);
-		insertStar(con, buffer, fc, nstar, db, iOrdInput);
-		
-		
-//		db.createTablesMeta(con, "wtltest_metaJava");
-//		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
-//				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
-//		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-//		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-//		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
-		db.dbClose(con);
-		System.out.println("Connected, but now exiting, goodbye.");
+			//Set up for db connection
+			//		Connection con = db.dbConnect("jdbc:jtds:sqlserver://fatboy.npl.washington.edu/NBODY", "NBODY-1", "TheWholeNchilada!");
+			Connection con = db.dbConnect("jdbc:jtds:sqlserver://"+hostName, userName, password);
+
+			//create tables for the different particles
+			db.createTablesGas(con, tableNameGas); //create gas table
+			db.createTablesDark(con, tableNameDark); //create dark table
+			db.createTablesStar(con, tableNameStar); //create star table
+
+
+			//Create prepared statements for bulk insertion
+			db.prepareGasStatement(con, tableNameGas);
+			db.prepareDarkStatement(con, tableNameDark);
+			db.prepareStarStatement(con, tableNameStar);
+
+			buffer = ByteBuffer.allocate(48); //bump it to 4 mb
+			insertGas(con, buffer, fc, ngas, db, iOrdInput);
+
+			//		insertMeta();
+			//inserted this much data: 1572864
+			//Insertion (dark) took 67006ms
+
+			buffer = ByteBuffer.allocate(36);
+			insertDark(con, buffer, fc, ndark, db, iOrdInput);
+
+			buffer = ByteBuffer.allocate(44);
+			insertStar(con, buffer, fc, nstar, db, iOrdInput);
+
+
+			//		db.createTablesMeta(con, "wtltest_metaJava");
+			//		db.insertDataDark(con, "wtltest_DarkJava", 2097152, (float)1.07765e-07, (float)-0.477565, (float)-0.446872, 
+			//				(float)-0.45568, (float)0.100956, (float)0.057776, (float)0.0266779, (float)-0.113261, (float)9.6e-06);
+			//		db.insertDataGas(con, "wtltest_GasJava", 50, 55, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+			//		db.insertDataStar(con, "wtltest_StarJava", 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+			//		db.insertDataMeta(con, "wtltest_metaJava", 5, 333, 50, 50, 50, 50);
+			db.dbClose(con);
+			System.out.println("Connected, but now exiting, goodbye.");
+		}
 	}
 
 	private static void usage() {
-		
+
 		System.out.println("USAGE:");
 		System.out.println("java DataLoadPipeline.jar -f <TIPSY_Binary_File> -iord <iOrder_file.iord> [ -print ]");
 		System.out.println("        -host <Host_Name> -u <User_Name> -p <Password>");
