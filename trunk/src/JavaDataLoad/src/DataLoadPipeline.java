@@ -29,7 +29,7 @@ public class DataLoadPipeline {
 		// table name / create table first?
 			// -table <tablename> | -create <tablename>
 		// (config file)
-		
+		usage();
 		int i = 0;
 		boolean bad = false;
 		boolean createTable = false;
@@ -151,6 +151,17 @@ public class DataLoadPipeline {
 		System.out.println("Connected, but now exiting, goodbye.");
 	}
 
+	private static void usage() {
+		
+		System.out.println("USAGE:");
+		System.out.println("java DataLoadPipeline.jar -f <TIPSY_Binary_File> -iord <iOrder_file.iord> [ -print ]");
+		System.out.println("        -host <Host_Name> -u <User_Name> -p <Password>");
+		System.out.println("    -- Load a TIPSY file with iOrder into the specified database.");
+		System.out.println("    -- The optional -print tells the program to print headers from TIPSY file without importing data");
+		System.out.println("    -- <Host_Name> specifies the server to which the data is imported.");
+		System.out.println("    -- <User_Name> and <Password> specifies the login of the server.");
+	}
+	
 	private static void insertStar(Connection con, ByteBuffer buffer, FileChannel fc, int nstar, DB db, Scanner iOrdInput) throws IOException {
 		long s,t;
 		s = System.currentTimeMillis();
