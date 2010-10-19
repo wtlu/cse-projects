@@ -31,12 +31,11 @@ public class DataLoadPipeline {
 		// (config file)
 		//usage();
 		int i = 0;
-		boolean bad = false;
-		boolean createTable = false;
+//		boolean createTable = false;
 //		boolean star = false;
 //		boolean gas = false;
 //		boolean dark = false;
-		boolean printHeader = false;
+//		boolean printHeader = false;
 		//String tipsyFile, iordFile, hostName, userName, password/*, starTableName, gasTableName, darkTableName*/;
 		String tipsyFile = null, iordFile = null, hostName = null, userName = null, password = null;
 		for ( ; i < args.length; ++i ) {
@@ -48,7 +47,7 @@ public class DataLoadPipeline {
 			} else if ( "-iord".equals(args[i]) ) {
 				iordFile = args[++i];
 			} else if ( "-print".equals(args[i]) ) {
-				printHeader = true;
+//				printHeader = true;
 			} else if ( "-host".equals(args[i]) ) {
 				hostName = args[++i];
 			} else if ( "-u".equals(args[i]) ) {
@@ -282,8 +281,8 @@ public class DataLoadPipeline {
 		
 	}
 
-	private static void insertMeta() {
-		// TODO Auto-generated method stub
-		
-	}
+//	private static void insertMeta() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 }
