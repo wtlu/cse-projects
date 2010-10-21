@@ -1,0 +1,43 @@
+- displayAll(answer);
+name                                       E/I   S/N   T/F   J/P  Type
+DavidB                                       0    55    45    45  ENTJ
+Jenny                                       20    85    15    75  ENTP
+Julia                                       10    32    75    30  ESFJ
+gremlin                                     10    40    70    35  ESFJ
+Alex                                        10    10    35    30  ESTJ
+Eric                                        20    25    35    25  ESTJ
+J                                            0     0     0     0  ESTJ
+LANDON MEERNIK (That guy with long hair)    20    40    10    35  ESTJ
+Link                                        40    45    25    20  ESTJ
+roy                                         30    50    20    20  EXTJ
+jared                                       60    70    90    30  INFJ
+Stuart                                      80    95    70    85  INFP
+AFKforever                                  60    65    25    10  INTJ
+Cremepuff                                   90    60    40    40  INTJ
+Titus                                       90    60    25    30  INTJ
+Cody                                        80    55    40    55  INTP
+Colin Scott                                 70    95    10    70  INTP
+Crom                                       100    70    50    55  INXP
+Atilla the Hun                              80    35    55    15  ISFJ
+Zelos                                       70    30    70    10  ISFJ
+alice                                       89    33    72    10  ISFJ
+Gumgo                                       70    25    65    80  ISFP
+Ryan                                        70    35    55    70  ISFP
+Bulbasaur                                  100    45     5    30  ISTJ
+Danny Dominator                             70    35    45    45  ISTJ
+Friedrich Wilhelm                           90    25    20    20  ISTJ
+James Gosling                               90    15    30    35  ISTJ
+KZ                                          90    45    35    35  ISTJ
+Marty                                       60    45    45    35  ISTJ
+Robert                                      56    21     5    11  ISTJ
+Yo Yo Ma Ma                                 60    11    20    25  ISTJ
+bored enough to take this                   90    21    17    15  ISTJ
+heather                                     60    40    45    30  ISTJ
+Girls Dead Monster                          80    40    25    50  ISTX
+Voldemort                                   60    15    50    25  ISXJ
+qkt                                         70    39    50    65  ISXP
+Banana                                      50    60    60    45  XNFJ
+Elise                                       50    26    70    25  XSFJ
+Tom Clancy                                  50    30    80    35  XSFJ
+Cauchy-Riemann                              50    40     5    10  XSTJ
+val it = () : unit
