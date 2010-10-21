@@ -63,4 +63,12 @@ fun countNegative(lst) = length(filterx(fn x => (x<0), lst));
 	Post: produces a list of all tuples whose
 	first value is between 1 and m and whose second value is between 1 and n
 *)
-fun allPairs(m, n) = mapx(fn x => (1, x),(1--n)));
+fun allPairs(m, n) = mapx(fn x => (1, x),(1--n));
+
+val doubled = curry op* 2;
+
+(* produces 2n + 3*)
+val timesTwoPlusThree = (curry op+ 3) o (curry op* 2);
+
+(* returns true if n is positive, else false*)
+val positive = curry op< 0;
