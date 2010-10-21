@@ -44,3 +44,23 @@ val testc = [8,6];
 val testd = [3,9,1,7];
 val teste = [12,2,4,0];
 val testf = [5];
+val testg = [3,17,~9,34,~7,2];
+
+(*takes two integers k and n and produce list of first k multiples of n*)
+fun multiples(k, n) = mapx( fn x => (x*n), 1--k);
+
+(* 	Pre: x is not negative or 0
+	Post: Returns the sum of the first x reciprocals
+*)
+fun sumTo(x) = reduce( op +, mapx(fn n => (1.0/ real(n)), 1--x));
+
+(* 	Pre: lst is valid int list
+	Post: Produces a count of number of negative integers in given lst
+*)
+fun countNegative(lst) = length(filterx(fn x => (x<0), lst));
+
+(* 	Pre: m and n are positive integers
+	Post: produces a list of all tuples whose
+	first value is between 1 and m and whose second value is between 1 and n
+*)
+fun allPairs(m, n) = mapx(fn x => (1, x),(1--n)));
