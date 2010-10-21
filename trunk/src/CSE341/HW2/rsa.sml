@@ -38,15 +38,7 @@ fun intsToString(lst) =
 		implode(intsToChars(lst))
 	end;
 	
-(* 	Pre: x and y are integers, y not negative
-	Post: Returns the result of raising the first integer (x) to
-	power of the second (y). Note that we assume every integer 
-	to the 0 power is 1
-*)
-fun pow(x, 0) = 1
-|	pow(x, y) = x * pow(x, y - 1);
 
-val lst = [18, 3, 95, 48, 22, 39, 47, 12, 73, 15]; 
 
 (* 	Pre: k and b are both greater than 0
 			numbers in the list are all > 0 and < b
@@ -57,6 +49,14 @@ val lst = [18, 3, 95, 48, 22, 39, 47, 12, 73, 15];
 *)
 fun pack(lst, k, b) = 
 	let
+		(* 	Pre: x and y are integers, y not negative
+			Post: Returns the result of raising the first integer (x) to
+			power of the second (y). Note that we assume every integer 
+			to the 0 power is 1
+		*)
+		fun pow(x, 0) = 1
+		|	pow(x, y) = x * pow(x, y - 1);
+		
 		(* 	Pre: inital passed lst is correctly formatted,
 					passed in values are not negative
 			Post: returns a tuple of list, with first value the 
@@ -129,7 +129,6 @@ fun modPow(x, y, n) =
 			Post: Returns (x^y mod n)
 		*)	
 		fun modPowEven(x, 0, n) = 1
-		|	modPowEven(x, 1, n) = x mod n
 		|	modPowEven(x, 2, n) = (x * x) mod n
 		|	modPowEven(x, y, n) = 
 				if y mod 2 = 1 then (((modPowEven(x, y div 2, n) * modPowEven(x, y div 2, n)) mod n)*(x mod n) ) mod n
