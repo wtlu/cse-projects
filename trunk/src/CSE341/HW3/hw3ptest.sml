@@ -6,3 +6,5 @@
 	HW3 - This program computes the answer to the 
 	Keirsey personality test
 *)
+
+use "utility-ptest.sml";
