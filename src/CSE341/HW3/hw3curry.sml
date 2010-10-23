@@ -69,17 +69,17 @@ fun countNegative(lst) = length(filterx(fn x => (x<0), lst));
 *)
 fun allPairs(n, m) = reduce(op@, mapx(fn x => mapx(fn y => (x, y), 1--m), 1--n));
 
-(* produces 2n + 3*)
+(* Post: produces 2n + 3*)
 val timesTwoPlusThree = (curry op+ 3) o (curry op* 2);
 
-(* returns true if n is positive, else false*)
+(* Post: returns true if n is positive, else false*)
 val positive = curry op< 0;
 
-(* returns a list of of the first n even numbers
+(* Post: returns a list of of the first n even numbers
 starting with 2*)
 val evens = (map (curry op* 2)) o (curry op-- 1);
 
-(* takes a list of integers and produces a list of the 
+(* Post: takes a list of integers and produces a list of the 
 square roots of the positive integers in the list, rounded
 to the nearest integer*)
 val roots = (map (round o Math.sqrt o real)) o filter (curry op< 0);
