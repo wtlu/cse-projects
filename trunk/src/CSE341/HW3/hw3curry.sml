@@ -37,19 +37,6 @@ fun list1 ~~ [] = list1
 |	[] ~~ list2 = list2
 |	(first1::rest1) ~~ (first2::rest2) = [first1, first2] @ (rest1 ~~ rest2);
 
-(*test values delete when done*)
-val testa = [1,2,3];
-val testb = [4,5,6];
-val testc = [8,6];
-val testd = [3,9,1,7];
-val teste = [12,2,4,0];
-val testf = [5];
-val testg = [3,17,~9,34,~7,2];
-val testh = [1,3,~8,14,0,7,~22,45];
-val testi = ["what", "you", "see", "is", "what", "you", "get"];
-val testj = ["there", "ain't", "no", "such", "thing", "as", "a", "free", "lunch"];
-val testk = ["four", "score", "and", "seven", "years", "ago"];
-
 (*takes two integers k and n and produce list of first k multiples of n*)
 fun multiples(k, n) = mapx( fn x => (x*n), 1--k);
 

@@ -42,13 +42,10 @@ exception WrongFormatLst
 	Post: returns the string of personality based on the dimensions*)
 fun translate4([one,two,three,four]) = 
 	let
-		fun EorI(x) = if x < 50 then #"E" else if x = 50 then #"X" else #"I"
-		fun SorN(x) = if x < 50 then #"S" else if x = 50 then #"X" else #"N"
-		fun TorF(x) = if x < 50 then #"T" else if x = 50 then #"X" else #"F"
-		fun JorP(x) = if x < 50 then #"J" else if x = 50 then #"X" else #"P"
-		(*fun chooseDimension(x, y, z) = if x < 50 then y else if x = 50 then #"X" else z*)
+		fun chooseDim(x, y, z) = if x < 50 then y else if x = 50 then #"X" else z
 	in
-		implode([EorI(one), SorN(two), TorF(three), JorP(four)])
+		implode([chooseDim(one, #"E", #"I"), chooseDim(two, #"S",#"N"), 
+			chooseDim(three, #"T", #"F"), chooseDim(four, #"J", #"P")])
 	end
 |	translate4(_) = raise WrongFormatLst;
 
@@ -82,8 +79,8 @@ fun getNamesInTuple(x, y) =
 fun helperCmp(x,y) = (String.<(getNamesInTuple(x,y)));
 
 (*	Pre: data is in correct format
-	Post: returns list of triples. Each triple in list should contain information for one person from
-	passed in data. Each triple composed of:
+	Post: returns list of triples. Each triple in list should contain information for one person
+	from passed in data. Each triple composed of:
 	person's name, list of their four personality scores, personality type)
 *)
 val answer = quicksort(helperCmp, calculateEveryone(data));
