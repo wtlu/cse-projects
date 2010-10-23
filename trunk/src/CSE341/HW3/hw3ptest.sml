@@ -19,7 +19,10 @@ fun translate2([]) = []
 			fun countAB([]) = (0,0)
 			|	countAB(first::rest) = 
 					let
-						val (x,y) = if first = "A" then (1,0) else (0,1)
+						val (x,y) = 
+							if first = "A" then (1,0) 
+							else if first = "B" then (0,1)
+							else (0,0)
 						val (u,v) = countAB(rest)
 					in
 						(x + u, y + v)
@@ -33,6 +36,7 @@ fun translate2([]) = []
 	for each of four personality dimension*)
 fun translate3(lst) = map (fn (x,y) => round((real(y)*100.0)/real(x + y))) lst;
 
+(*Exception to throw when the given list is not in correct format*)
 exception WrongFormatLst	
 (*	Pre: lst is from result of running translate3, should not be empty
 	Post: returns the string of personality based on the dimensions*)
@@ -42,6 +46,7 @@ fun translate4([one,two,three,four]) =
 		fun SorN(x) = if x < 50 then #"S" else if x = 50 then #"X" else #"N"
 		fun TorF(x) = if x < 50 then #"T" else if x = 50 then #"X" else #"F"
 		fun JorP(x) = if x < 50 then #"J" else if x = 50 then #"X" else #"P"
+		(*fun chooseDimension(x, y, z) = if x < 50 then y else if x = 50 then #"X" else z*)
 	in
 		implode([EorI(one), SorN(two), TorF(three), JorP(four)])
 	end
@@ -76,5 +81,10 @@ fun getNamesInTuple(x, y) =
 	given. The tuple is from tuple list from result of calculateEveryone.*)
 fun helperCmp(x,y) = (String.<(getNamesInTuple(x,y)));
 
-
+(*	Pre: data is in correct format
+	Post: returns list of triples. Each triple in list should contain information for one person from
+	passed in data. Each triple composed of:
+	person's name, list of their four personality scores, personality type)
+*)
 val answer = quicksort(helperCmp, calculateEveryone(data));
+displayAll(answer);
