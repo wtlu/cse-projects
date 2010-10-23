@@ -9,9 +9,6 @@
 
 use "utility-ptest.sml";
 
-
-val (name, result) = hd(data);
-
 (*	Pre: lst is from result of running translate1
 	Post: produces the lst of tuples (a,b) where a is count of As in
 	the lst and b is the count of Bs in the lst. Should have four tuples
@@ -50,9 +47,6 @@ fun translate4([one,two,three,four]) =
 	end
 |	translate4(_) = raise WrongFormatLst;
 
-val martyResult = translate3(translate2(translate1(result)));
-val realFirstResult = (name, martyResult, translate4(martyResult));
-
 (*	Pre: given list is in right format i.e. (string * string) list
 	Post: Operates on everyone's data, returning a list of three tuple
 	first in tuple is name, second is score, third is personality*)
@@ -66,4 +60,21 @@ fun calculateEveryone([]) = []
 			(name, calculatedResult,personality) :: calculateEveryone(rest)
 		end;
 
-val answer = calculateEveryone(data);
+(*	Pre: tuple x y is in proper format
+	it has to have three values, the first being the name
+	second being the personality score, and third being the personality trait
+	Post: creates a string that is the personality followed by the name of the person*)
+fun getNamesInTuple(x, y) = 
+	let
+		val (a,b,c) = x
+		val (d,e,f) = y
+	in 
+		(c^a, f^d)
+	end;
+	
+(*Post:	Creates a comparator to compare two strings from the two tuples
+	given. The tuple is from tuple list from result of calculateEveryone.*)
+fun helperCmp(x,y) = (String.<(getNamesInTuple(x,y)));
+
+
+val answer = quicksort(helperCmp, calculateEveryone(data));
