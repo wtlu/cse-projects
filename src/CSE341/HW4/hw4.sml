@@ -40,6 +40,12 @@ val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 
 (*Part B: Grouping Words into N-Grams*)
 
+(*	Pre: lst and string in correct format.
+	Post: takes string lst of leading words and a string 
+	representing a completion word and turns it into an initial ngram
+	instance storing that data with total count of 1*)
+fun createNgram(lst, str) = Ngram(lst, 1, [(str, 1)]);
+
 (*Part C: Building an N-gram Tree*)
 
 (*Part D: Generating Random Text*)
