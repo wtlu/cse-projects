@@ -1,0 +1,54 @@
+- val tree = buildTree("tiny.txt", 2);
+val tree =
+  NgramNode
+    (Ngram ([#],3,[#,#]),NgramNode (Ngram #,NgramNode #,NgramNode #),
+     NgramNode (Ngram #,NgramNode #,Empty)) : NgramTree
+
+- printTree(tree);
+    [the], 2, (shells,1), (sea,1)
+        [sure], 1, (are,1)
+            [shore.], 1, (The,1)
+[shore], 3, (shells.,2), (shells,1)
+                        [shells.], 1, (For,1)
+                    [shells,], 1, (the,1)
+                [shells], 4, (she,2), (as,1), (by,1)
+            [she], 3, (sells,3)
+        [sells], 4, (are,1), (sea,2), (sure,1)
+    [sea], 6, (shore,3), (shells,,1), (shore.,1), (shells,1)
+                [if], 1, (she,1)
+                    [by], 1, (the,1)
+            [as], 1, (sea,1)
+        [are], 2, (sea,2)
+                [The], 1, (shells,1)
+                    [She], 1, (sells,1)
+            [For], 1, (if,1)
+val it = () : unit
+
+- lookup(tree, ["sells"]);
+val it = SOME (Ngram (["sells"],4,[(#,#),(#,#),(#,#)])) : ngram option
+
+- lookup(tree, ["horse"]);
+val it = NONE : ngram option
+
+- randomStart(tree);
+val it = ["The"] : string list
+- randomStart(tree);
+val it = ["She"] : string list
+- randomStart(tree);
+val it = ["She"] : string list
+- randomStart(tree);
+val it = ["The"] : string list
+- randomStart(tree);
+val it = ["For"] : string list
+
+- val doc = randomDocument(tree, 20);
+val doc =
+  ["She","sells","sure","are","sea","shore","shells.","For","if","she",
+   "sells","sea",...] : string list
+
+- printList(doc);
+She sells sure are sea shore shells. For if she sells sea shore shells. For
+if she sells sea shells she sells sure are sea shells she sells sea shore
+shells.
+
+val it = () : unit

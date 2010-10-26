@@ -1,0 +1,55 @@
+- val tree = buildTree("hamlet.txt", 3);
+val tree =
+  NgramNode
+    (Ngram ([#,#],1,[#]),NgramNode (Ngram #,NgramNode #,NgramNode #),
+     NgramNode (Ngram #,NgramNode #,NgramNode #)) : NgramTree
+
+val it = () : unit
+
+- Control.Print.printDepth := 50;
+val it = () : unit
+
+- lookup(tree, ["But", "soft!"]);
+val it = SOME (Ngram (["But","soft!"],4,[(#,#),(#,#),(#,#),(#,#)]))
+  : ngram option
+
+- lookup(tree, ["But", "soft!"]);
+val it =
+  SOME
+    (Ngram
+       (["But","soft!"],4,[("but",1),("What",1),("methinks",1),("behold!",1)]))
+  : ngram option
+
+- lookup(tree, ["Enter", "King"]);
+val it = SOME (Ngram (["Enter","King"],4,[("and",4)])) : ngram option
+
+- lookup(tree, ["I", "am"]);
+val it =
+  SOME
+    (Ngram
+       (["I","am"],45,
+        [("more",1),("dead;",1),("dead,",1),("but",2),("poison'd.",1),
+         ("justly",1),("afeard",1),("satisfied",1),("punish'd",1),
+         ("constant",1),("very",3),("not",1),...])) : ngram option
+
+- lookup(tree, ["I", "am"]);
+val it =
+  SOME
+    (Ngram
+       (["I","am"],45,
+        [("more",1),("dead;",1),("dead,",1),("but",2),("poison'd.",1),
+         ("justly",1),("afeard",1),("satisfied",1),("punish'd",1),
+         ("constant",1),("very",3),("not",1),...])) : ngram option
+
+- val doc = randomDocument(tree, 50);
+val doc =
+  ["I","stand","in","pause","where","I","found,","Horatio","O","royal",
+   "knavery!",",",...] : string list
+
+- printList(doc);
+I stand in pause where I found, Horatio O royal knavery! , an exact
+command, Larded with many several sorts of reasons, Importing Denmark's
+health, and England's too, With, hoo! such bugs and goblins in my face?
+Tweaks me by Claudio; he receiv'd them Of him that brought them. Exeunt.
+
+val it = () : unit
