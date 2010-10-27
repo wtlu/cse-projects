@@ -37,6 +37,9 @@ fun	groupWords([], _) = []
 			end;
 
 val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
+val test = ["to", "be"]
+val test2 = "or"
+val ngtest = Ngram(["to","be"],1,[("or",1)]);
 
 (*Part B: Grouping Words into N-Grams*)
 
@@ -45,6 +48,25 @@ val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 	representing a completion word and turns it into an initial ngram
 	instance storing that data with total count of 1*)
 fun createNgram(lst, str) = Ngram(lst, 1, [(str, 1)]);
+
+
+(*	Pre: n-gram and word is valid
+	Post: takes existing ng n-gram and completion word str and produces 
+	new n-gram that includes the given word that n-gram's list of completions*)
+fun addToNgram(Ngram(lead, count, tupleLst), str) = 
+	let
+		fun processLst([]) = [(str, 1)]
+		|	processLst(first::rest) = 
+			let
+				val (word, frequency) = first
+			in
+				if word = str then (word, frequency+1)::rest
+				else first::processLst(rest)
+			end;
+	in
+		Ngram(lead, count+1, processLst(tupleLst))
+	end;
+
 
 (*Part C: Building an N-gram Tree*)
 
