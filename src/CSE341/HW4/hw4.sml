@@ -67,6 +67,24 @@ fun addToNgram(Ngram(lead, count, tupleLst), str) =
 		Ngram(lead, count+1, processLst(tupleLst))
 	end;
 
+(*	Pre: Ngram is valid
+	Post: takes the n-gram and chooses randomly from its list of completion words
+	using the existing statistical frequency of the various completion words to weight 
+	the random selection*)
+fun randomCompletion(Ngram(lead, count, tupleLst)) =
+	let
+		val randCount = randomInt() mod count
+		fun processLst([], _) = raise OutOfRange
+		|	processLst((first as (a,b))::rest, 0) = a
+		|	processLst((first as (a,b))::rest, index) = 
+				if index - b < 0 then a
+				else processLst(rest, index - b)
+	in
+		processLst(tupleLst, randCount)
+	end;
+	
+val ng2 = addToNgram(ngtest, "or");
+val ng3 = addToNgram(ng2, "with");
 
 (*Part C: Building an N-gram Tree*)
 
