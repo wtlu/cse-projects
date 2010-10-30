@@ -111,4 +111,18 @@ val test9 = ["hi"];
 val test10 = ["bye","now"];
 val test11 = ["you","go","boy"];
 
+(*	Pre: Tree is formatted correctly
+	Post: takes n-gram tree, a list of leading words, and completion word and produces tree
+	obtained by inserting the leading words/completion word combination into the tree
+	If the set of leading words is already in treem, the completion word should be added to that n-gram
+	If not, a new ngram should be added to the tree with a frequency of 1. The tree should be ordered based on
+	how the strings compare with each other. If n-gram tree is empty, the result is a new tree with the given data
+	as its sole element*)
+fun addToTree(Empty, lst, str) = NgramNode(createNgram(lst, str), Empty, Empty)
+|	addToTree(NgramNode(ndata as Ngram(nlst, count, tupleLst), left, right), lst, str) =
+			if (stringListCompare(lst, nlst) = EQUAL) then NgramNode(addToNgram(ndata, str), left, right)
+			else if (stringListCompare(lst,nlst) = LESS) then NgramNode(ndata, addToTree(left, lst, str), right)
+			else NgramNode(ndata, left, addToTree(right, lst, str));
+
+
 (*Part D: Generating Random Text*)
