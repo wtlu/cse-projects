@@ -36,6 +36,7 @@ fun	groupWords([], _) = []
 				(a,b)::groupWords(rest, n)
 			end;
 
+(*Testing values, delete when done*)
 val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 val test = ["to", "be"]
 val test2 = "or"
@@ -83,9 +84,31 @@ fun randomCompletion(Ngram(lead, count, tupleLst)) =
 		processLst(tupleLst, randCount)
 	end;
 	
+(*Testing values, delete when done*)
 val ng2 = addToNgram(ngtest, "or");
 val ng3 = addToNgram(ng2, "with");
 
 (*Part C: Building an N-gram Tree*)
+
+(*	Pre: valid string lists
+	Post: compare the list and return LESS if the first list comes alphabetically
+	earlier than the second; EQUAL if the two lists are exactly the same; and
+	GREATER if the first list comes alphabetically later than the second*)
+fun stringListCompare([], []) = EQUAL
+|	stringListCompare(_,[]) = GREATER
+|	stringListCompare([],_) = LESS
+|	stringListCompare(first1::rest1, first2::rest2) =
+		if first1 = first2 then stringListCompare(rest1,rest2)
+		else if String.<(first1, first2) then LESS
+		else GREATER;
+
+(*Testing values, delete when done*)
+val test5 = ["hi","how","ru"];
+val test6 = ["hi","yo","man"];
+val test7 = ["hi","how","me"];
+val test8 = ["hi", "how"];
+val test9 = ["hi"];
+val test10 = ["bye","now"];
+val test11 = ["you","go","boy"];
 
 (*Part D: Generating Random Text*)
