@@ -165,6 +165,14 @@ fun lookup(Empty, lst) = NONE
 			end;
 
  
+(*	Pre: filename and file exists and readable
+	Post: returns an n-gram tree constructed using the words from the given
+	input file with n-grams of length n. If n is less than 2, then OutOfRange
+	exception will be raised*)
+ fun buildTree(filename, n) = 
+	if n < 2 then raise OutOfRange
+	else addAllToTree(groupWords(read(filename), n));
+	
 (*Testing values, delete when done*)
 val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 val test = ["to", "be"]
