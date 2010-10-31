@@ -148,8 +148,23 @@ fun randomStart(Empty) = raise InvalidInput
 		in
 			getRandomWord(lstCapWords, getRandomNum)
 		end;
-		
 
+(*	Pre: valid ngram tree and valid str lst
+	Post: produces a n-gram option that is either the n-gram associated with the given
+	set of leading words in the given tree, or NONE if not found*)		
+fun lookup(Empty, lst) = NONE
+|	lookup(NgramNode(ndata as Ngram(nlst, count, tupleLst), left, right), lst) = 
+		if nlst = lst then SOME ndata
+		else 
+			let 
+				val leftFind = lookup(left, lst)
+				val rightFind = lookup(right, lst)
+			in
+				if isSome(leftFind) then leftFind
+				else rightFind
+			end;
+
+ 
 (*Testing values, delete when done*)
 val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 val test = ["to", "be"]
