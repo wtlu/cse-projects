@@ -134,6 +134,7 @@ fun addAllToTree([]) = Empty
 fun randomStart(Empty) = raise InvalidInput
 |	randomStart(root as NgramNode(ndata, left, right)) = 
 		let
+			(*Gets a list of list of leading words where the first word is capitalized*)
 			fun getLstCapWords(Empty) = []
 			|	getLstCapWords((NgramNode(ndata as Ngram(nlst, count, tupleLst), left, right))) =
 					if isSentenceStart(hd(nlst))
@@ -142,6 +143,8 @@ fun randomStart(Empty) = raise InvalidInput
 						getLstCapWords(left)@getLstCapWords(right)
 			val lstCapWords = (getLstCapWords(root))
 			val getRandomNum = randomInt() mod length(lstCapWords)
+			
+			(*picks a random word from the given list and random number*)
 			fun getRandomWord([], _) = []
 			|	getRandomWord(lst, 0) = hd(lst)
 			|	getRandomWord(first::rest, n) = getRandomWord(rest, n - 1) 
@@ -183,27 +186,30 @@ fun randomDocument(_, 0) = []
 		else
 			let
 				val result = randomStart(root)
-				val currentWindow = result
-				(*
-				val oldWindow::CurWindow = result
-				val ngramNext = lookup(root, result)
-				val word = randomCompletion(valOf(ngramNext))
-				val currentWindow = CurWindow@[word]
-				*)
 				fun addToResult([],_, _) = raise InvalidInput
-				|	addToResult(window, resultSentence, 0) = (resultSentence)
 				|	addToResult(window as windowFirst::windowRest, resultSentence, currentCount) =
-						let
-							val ngramNext = lookup(root, window)
-							val word = randomCompletion(valOf(ngramNext))
-							val newWindow = windowRest@[word]
-							val newResult = resultSentence@[word]
-							val y = addToResult(newWindow, newResult, currentCount - 1)
-						in
-							(y)
-						end;
+						if currentCount < 1 andalso 
+							(isSentenceEnd(last(resultSentence)) orelse last(resultSentence) = "") 
+							then resultSentence
+						else if currentCount < 1 then addToResult(window, resultSentence, 1)
+						else
+							let
+								val ngramNext = lookup(root, window)
+								val handleSpecial = not (isSome(ngramNext))
+								val startAgain = if (handleSpecial) then randomStart(root) else []
+								val word = if handleSpecial then "" 
+									else randomCompletion(valOf(ngramNext))
+								val newResult = 
+									if handleSpecial andalso currentCount > 0
+										then resultSentence@startAgain
+									else if handleSpecial then resultSentence
+									else resultSentence@[word]
+								val newWindow = if handleSpecial then startAgain else windowRest@[word]
+							in
+								addToResult(newWindow, newResult, currentCount - 1)
+							end;
 			in
-				addToResult(currentWindow, result, count - length(result))
+				addToResult(result, result, count - length(result))
 			end;
  
 (*Testing values, delete when done*)
@@ -225,3 +231,4 @@ val test11 = ["you","go","boy"];
 val test12 = groupWords(words, 3);
 val test13 = addAllToTree(test12);
 val test14 = buildTree("tiny.txt", 3);
+val test15 = buildTree("hamlet.txt", 5);
