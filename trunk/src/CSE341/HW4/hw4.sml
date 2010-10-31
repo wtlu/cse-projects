@@ -11,6 +11,8 @@ use "ngram.sml";
 
 (* Defining an exception type to raise when a number is out of range. *)
 exception OutOfRange
+(* Defining an exception type to raise when a given input is invalid*)
+exception InvalidInput
 
 (* Part A: Processing the Input File*)
 (*	Pre:	lst of strings is valid
@@ -36,11 +38,7 @@ fun	groupWords([], _) = []
 				(a,b)::groupWords(rest, n)
 			end;
 
-(*Testing values, delete when done*)
-val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
-val test = ["to", "be"]
-val test2 = "or"
-val ngtest = Ngram(["to","be"],1,[("or",1)]);
+
 
 (*Part B: Grouping Words into N-Grams*)
 
@@ -84,9 +82,7 @@ fun randomCompletion(Ngram(lead, count, tupleLst)) =
 		processLst(tupleLst, randCount)
 	end;
 	
-(*Testing values, delete when done*)
-val ng2 = addToNgram(ngtest, "or");
-val ng3 = addToNgram(ng2, "with");
+
 
 (*Part C: Building an N-gram Tree*)
 
@@ -102,14 +98,7 @@ fun stringListCompare([], []) = EQUAL
 		else if String.<(first1, first2) then LESS
 		else GREATER;
 
-(*Testing values, delete when done*)
-val test5 = ["hi","how","ru"];
-val test6 = ["hi","yo","man"];
-val test7 = ["hi","how","me"];
-val test8 = ["hi", "how"];
-val test9 = ["hi"];
-val test10 = ["bye","now"];
-val test11 = ["you","go","boy"];
+
 
 (*	Pre: Tree is formatted correctly
 	Post: takes n-gram tree, a list of leading words, and completion word and produces tree
@@ -137,3 +126,45 @@ fun addAllToTree([]) = Empty
 |	addAllToTree((a,b)::rest) = addToTree(addAllToTree(rest), a, b);
 
 (*Part D: Generating Random Text*)
+
+(*	Pre: Given tree contains at least one node whose first 
+	leading word begins with a capital letter
+	Post: randomly picks a list of (n-1) leading words where the first word 
+	begins with a capital letter *)
+fun randomStart(Empty) = raise InvalidInput
+|	randomStart(root as NgramNode(ndata, left, right)) = 
+		let
+			fun getLstCapWords(Empty) = []
+			|	getLstCapWords((NgramNode(ndata as Ngram(nlst, count, tupleLst), left, right))) =
+					if isSentenceStart(hd(nlst))
+						then nlst::getLstCapWords(left)@getLstCapWords(right)
+					else
+						getLstCapWords(left)@getLstCapWords(right)
+			val lstCapWords = (getLstCapWords(root))
+			val getRandomNum = randomInt() mod length(lstCapWords)
+			fun getRandomWord([], _) = []
+			|	getRandomWord(lst, 0) = hd(lst)
+			|	getRandomWord(first::rest, n) = getRandomWord(rest, n - 1) 
+		in
+			getRandomWord(lstCapWords, getRandomNum)
+		end;
+		
+
+(*Testing values, delete when done*)
+val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
+val test = ["to", "be"]
+val test2 = "or"
+val ngtest = Ngram(["to","be"],1,[("or",1)]);
+(*Testing values, delete when done*)
+val ng2 = addToNgram(ngtest, "or");
+val ng3 = addToNgram(ng2, "with");		
+(*Testing values, delete when done*)
+val test5 = ["hi","how","ru"];
+val test6 = ["hi","yo","man"];
+val test7 = ["hi","how","me"];
+val test8 = ["hi", "how"];
+val test9 = ["hi"];
+val test10 = ["bye","now"];
+val test11 = ["you","go","boy"];
+val test12 = groupWords(words, 3);
+val test13 = addAllToTree(test12);
