@@ -169,10 +169,43 @@ fun lookup(Empty, lst) = NONE
 	Post: returns an n-gram tree constructed using the words from the given
 	input file with n-grams of length n. If n is less than 2, then OutOfRange
 	exception will be raised*)
- fun buildTree(filename, n) = 
+fun buildTree(filename, n) = 
 	if n < 2 then raise OutOfRange
 	else addAllToTree(groupWords(read(filename), n));
 	
+(*	Pre: ngram tree not empty, count >= 0
+	Post: produces a list of approximately count words that are randomly 
+	generated using a given tree*)
+fun randomDocument(_, 0) = []
+|	randomDocument(Empty, _) = raise InvalidInput
+|	randomDocument(root as NgramNode(ndata, left, right), count) =
+		if count < 0 then raise OutOfRange
+		else
+			let
+				val result = randomStart(root)
+				val currentWindow = result
+				(*
+				val oldWindow::CurWindow = result
+				val ngramNext = lookup(root, result)
+				val word = randomCompletion(valOf(ngramNext))
+				val currentWindow = CurWindow@[word]
+				*)
+				fun addToResult([],_, _) = raise InvalidInput
+				|	addToResult(window, resultSentence, 0) = (resultSentence)
+				|	addToResult(window as windowFirst::windowRest, resultSentence, currentCount) =
+						let
+							val ngramNext = lookup(root, window)
+							val word = randomCompletion(valOf(ngramNext))
+							val newWindow = windowRest@[word]
+							val newResult = resultSentence@[word]
+							val y = addToResult(newWindow, newResult, currentCount - 1)
+						in
+							(y)
+						end;
+			in
+				addToResult(currentWindow, result, count - length(result))
+			end;
+ 
 (*Testing values, delete when done*)
 val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
 val test = ["to", "be"]
@@ -191,3 +224,4 @@ val test10 = ["bye","now"];
 val test11 = ["you","go","boy"];
 val test12 = groupWords(words, 3);
 val test13 = addAllToTree(test12);
+val test14 = buildTree("tiny.txt", 3);
