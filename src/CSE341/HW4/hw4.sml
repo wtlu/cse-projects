@@ -124,5 +124,16 @@ fun addToTree(Empty, lst, str) = NgramNode(createNgram(lst, str), Empty, Empty)
 			else if (stringListCompare(lst,nlst) = LESS) then NgramNode(ndata, addToTree(left, lst, str), right)
 			else NgramNode(ndata, left, addToTree(right, lst, str));
 
+(*	Pre: Assuming we are working with ">=2"-grams. Overall frequency in an n-gram
+	is equal to the sum of the individual frequencies of its completion words
+	no completion words have a frequency of 0 or less, the list of completion words
+	is nonempty. n-gram tree is a proper binary search tree based on leading words lst
+	and the n-gram tree is nonempty. Data passed to our functions are consistent in terms of
+	n-gram length
+	Post: takes a list of tuples of the form(leading words, completion word)
+	and returns an n-gram tree built by inserting each tuple's data into an intitially
+	empty n-gram tree*)
+fun addAllToTree([]) = Empty
+|	addAllToTree((a,b)::rest) = addToTree(addAllToTree(rest), a, b);
 
 (*Part D: Generating Random Text*)

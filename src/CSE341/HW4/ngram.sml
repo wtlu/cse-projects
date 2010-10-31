@@ -44,6 +44,31 @@ fun printList(lst) =
     end;
 
 
+(* Returns a string representing the state of one n-gram instance. *)
+fun ngramToString(Ngram(leadingWords, count, completions)) =
+        let
+            fun joinByComma(a, b) = a ^ ", " ^ b
+            fun completionToString(word, count) = "(" ^ word ^ "," ^ Int.toString(count) ^ ")"
+        in
+            "[" ^ reduce(joinByComma, leadingWords) ^ "], "
+            ^ Int.toString(count) ^ ", "
+            ^ reduce(joinByComma, mapx(completionToString, completions))
+        end;
+
+(* Utility function to print an Ngram tree sideways.  Right is above center is above left. *)
+fun printTree(t) =
+    let
+        fun printHelper(Empty, _) = ()
+        |   printHelper(NgramNode(data, left, right), indent) = (
+                printHelper(right,  indent ^ "    ");
+                print(indent ^ ngramToString(data) ^ "\n");
+                printHelper(left, indent ^ "    ")
+            );
+    in
+        printHelper(t, "")
+    end;
+
+
 
 (* sorts a list with the quicksort algorithm given a comparison function *)
 (* and a list of values                                                  *)
