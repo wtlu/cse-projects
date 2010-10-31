@@ -186,12 +186,12 @@ fun randomDocument(_, 0) = []
 		else
 			let
 				val result = randomStart(root)
-				fun addToResult([],_, _) = raise InvalidInput
-				|	addToResult(window as windowFirst::windowRest, resultSentence, currentCount) =
+				fun getResult([],_, _) = raise InvalidInput
+				|	getResult(window as windowFirst::windowRest, resultSentence, currentCount) =
 						if currentCount < 1 andalso 
 							(isSentenceEnd(last(resultSentence)) orelse last(resultSentence) = "") 
 							then resultSentence
-						else if currentCount < 1 then addToResult(window, resultSentence, 1)
+						else if currentCount < 1 then getResult(window, resultSentence, 1)
 						else
 							let
 								val ngramNext = lookup(root, window)
@@ -206,10 +206,10 @@ fun randomDocument(_, 0) = []
 									else resultSentence@[word]
 								val newWindow = if handleSpecial then startAgain else windowRest@[word]
 							in
-								addToResult(newWindow, newResult, currentCount - 1)
+								getResult(newWindow, newResult, currentCount - 1)
 							end;
 			in
-				addToResult(result, result, count - length(result))
+				getResult(result, result, count - length(result))
 			end;
  
 (*Testing values, delete when done*)
