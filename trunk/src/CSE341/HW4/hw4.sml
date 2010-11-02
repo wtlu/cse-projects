@@ -211,24 +211,3 @@ fun randomDocument(_, 0) = []
 			in
 				getResult(result, result, count - length(result))
 			end;
- 
-(*Testing values, delete when done*)
-val words = ["Twas", "brillig", "and", "the", "slithy", "toves"];
-val test = ["to", "be"]
-val test2 = "or"
-val ngtest = Ngram(["to","be"],1,[("or",1)]);
-(*Testing values, delete when done*)
-val ng2 = addToNgram(ngtest, "or");
-val ng3 = addToNgram(ng2, "with");		
-(*Testing values, delete when done*)
-val test5 = ["hi","how","ru"];
-val test6 = ["hi","yo","man"];
-val test7 = ["hi","how","me"];
-val test8 = ["hi", "how"];
-val test9 = ["hi"];
-val test10 = ["bye","now"];
-val test11 = ["you","go","boy"];
-val test12 = groupWords(words, 3);
-val test13 = addAllToTree(test12);
-val test14 = buildTree("tiny.txt", 3);
-val test15 = buildTree("hamlet.txt", 5);
