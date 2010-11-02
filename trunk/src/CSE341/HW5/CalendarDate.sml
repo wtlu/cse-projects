@@ -74,12 +74,21 @@ fun next(c as {year, month, day}:calendarDate) =
 	else new(year, month, day+1);
 	
 (* returns the date that occurs one day before the date*)
-fun previous(c as {year, month, day}:calendarDate) =
+fun previous({year=1753, month=1, day=1}) = raise IllegalDate
+|	previous(c as {year, month, day}:calendarDate) =
 	if (day = 1) then
 		if (month = 1) then new(year - 1, 12, 31)
 		else new (year, month - 1, daysInMonth(new(year, month - 1, day)))
 	else new(year, month, day-1);
 
+	
+(*	Pre: client will not attempt to shift to a date earlier than January 1, 1753
+	Post: returns a new date that is exactly shift days away from the date passed in*)
+fun shift(c, 0) = c
+|	shift(c:calendarDate, n) = 
+		if n > 0 then shift(next(c), n - 1)
+		else shift(previous(c), n + 1)
+		
 (*returns a string representing that date in year/month/day format*)
 fun toString({year, month, day}:calendarDate) = 
 	Int.toString(year)^"/"^Int.toString(month)^"/"^Int.toString(day);
