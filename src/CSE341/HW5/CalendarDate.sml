@@ -16,16 +16,6 @@ exception IllegalDate;
 
 val example = {year=1979, month=9, day=19} :calendarDate; (* Sep 19, 1979 *)
 
-(*	Post: accepts three int parameters representing a year, month, and day
-	returns a date representing the given year, month, and date.
-	raises IllegalDate exception if the parameters represent an invalid date*)
-fun new(y, m, d) = 
-	if (y < 1753) orelse (m < 1 andalso m > 12) then raise IllegalDate
-	else if m = 2 andalso d > 29 then raise IllegalDate
-	else if (m = 4 orelse m = 6 orelse m = 9 orelse m = 11) andalso d > 30 then raise IllegalDate
-	else if d > 31 orelse d < 1 then raise IllegalDate
-	else {year=y, month=m, day=d} : calendarDate;
-	
 (*	Pre: valid calendarDate
 	Post: returns a value of type order indicating whether the first date
 	comes ealier or later than the second date. Returns equal if they are the same*)
@@ -41,11 +31,7 @@ fun compare(c1 as {year=y1, month=m1, day=d1}:calendarDate,
 				else if d1 > d2 then GREATER
 				else EQUAL
 
-(*	Post: returns the number of days that separate the two dates passed in*)
-fun daysBetween(c1 as {year=y1, month=m1, day=d1}:calendarDate, 
-	c2 as {year=y2, month=m2, day=d2}:calendarDate) =
-		if compare(c1, c2) = LESS then daysBetween(c2, c1)
-		else 0;
+
 		
 (* Post: returns true if that date takes place during a leap year, false otherwise*)
 fun isLeapYear({year, month, day}:calendarDate) =
@@ -66,6 +52,14 @@ fun daysInMonth(c as {year, month=2, day}:calendarDate) =
 fun daysInYear(c as {year, month, day}:calendarDate) = 
 	if isLeapYear(c) then 366 else 365;
 
+(*	Post: accepts three int parameters representing a year, month, and day
+	returns a date representing the given year, month, and date.
+	raises IllegalDate exception if the parameters represent an invalid date*)
+fun new(y, m, d) = 
+	if (y < 1753) orelse (m < 1 andalso m > 12) orelse (d < 1) then raise IllegalDate
+	else if d > daysInMonth({year=y, month=m, day=1}) then raise IllegalDate	
+	else {year=y, month=m, day=d} : calendarDate;
+	
 (* returns the date that occurs one day after that date*)
 fun next(c as {year, month, day}:calendarDate) = 
 	if (daysInMonth(c) = day) then
@@ -88,6 +82,13 @@ fun shift(c, 0) = c
 |	shift(c:calendarDate, n) = 
 		if n > 0 then shift(next(c), n - 1)
 		else shift(previous(c), n + 1)
+	
+(*	Post: returns the number of days that separate the two dates passed in*)
+fun daysBetween(c1 as {year=y1, month=m1, day=d1}:calendarDate, 
+	c2 as {year=y2, month=m2, day=d2}:calendarDate) =
+	if compare(c1, c2) = GREATER then daysBetween(c2, c1)
+	else if compare(c1, c2) = EQUAL then 0
+	else 1 + daysBetween(next(c1), c2);
 		
 (*returns a string representing that date in year/month/day format*)
 fun toString({year, month, day}:calendarDate) = 
@@ -114,3 +115,5 @@ val test17 = new(1998, 12, 25);
 val test18 = new(1996, 1, 1);
 val test19 = new(2004, 2, 2);
 val test20 = new(1900, 3, 30);
+val test21 = new(2010, 9, 19);
+val test22 = new(2010, 9, 29);
