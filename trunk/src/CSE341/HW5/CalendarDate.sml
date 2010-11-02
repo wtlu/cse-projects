@@ -102,7 +102,7 @@ fun dayOfWeek(c:calendarDate) = Sun;
 
 (*	Returns a date that reprsents the current date on which the program is being run*)
 fun today() = 
-	shift({year=1970, month=1, day=1},floor(Real.fromLargeInt(Time.toSeconds(Time.now()))/86400.0));
+	shift({year=1970, month=1, day=1},ceil(Real.fromLargeInt(Time.toSeconds(Time.now()))/86400.0)-1);
 
 
 val example = {year=1979, month=9, day=19} :calendarDate; (* Sep 19, 1979 *)
