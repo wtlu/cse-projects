@@ -66,6 +66,20 @@ fun daysInMonth(c as {year, month=2, day}:calendarDate) =
 fun daysInYear(c as {year, month, day}:calendarDate) = 
 	if isLeapYear(c) then 366 else 365;
 
+(* returns the date that occurs one day after that date*)
+fun next(c as {year, month, day}:calendarDate) = 
+	if (daysInMonth(c) = day) then
+		if (month = 12) then new(year + 1, 1, 1)
+		else new(year, month + 1, 1)
+	else new(year, month, day+1);
+	
+(* returns the date that occurs one day before the date*)
+fun previous(c as {year, month, day}:calendarDate) =
+	if (day = 1) then
+		if (month = 1) then new(year - 1, 12, 31)
+		else new (year, month - 1, daysInMonth(new(year, month - 1, day)))
+	else new(year, month, day-1);
+
 (*returns a string representing that date in year/month/day format*)
 fun toString({year, month, day}:calendarDate) = 
 	Int.toString(year)^"/"^Int.toString(month)^"/"^Int.toString(day);
