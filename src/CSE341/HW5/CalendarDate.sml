@@ -94,6 +94,17 @@ fun daysBetween(c1 as {year=y1, month=m1, day=d1}:calendarDate,
 fun toString({year, month, day}:calendarDate) = 
 	Int.toString(year)^"/"^Int.toString(month)^"/"^Int.toString(day);
 
+(* Following are extra credit*)
+
+(* Returns an instance of the datatype day representing the day
+	of the week on which the given date falls*)
+fun dayOfWeek(c:calendarDate) = Sun;
+
+(*	Returns a date that reprsents the current date on which the program is being run*)
+fun today() = 
+	shift({year=1970, month=1, day=1},floor(Real.fromLargeInt(Time.toSeconds(Time.now()))/86400.0));
+
+
 val example = {year=1979, month=9, day=19} :calendarDate; (* Sep 19, 1979 *)
 val test1 = new(2010, 10, 31);
 val test2 = new(2010, 3, 20);
