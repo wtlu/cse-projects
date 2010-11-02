@@ -62,9 +62,13 @@ fun daysInMonth(c as {year, month=2, day}:calendarDate) =
 		if month = 4 orelse month = 6 orelse month = 9 orelse month = 11 then 30
 		else 31;
 
+(* Returns how many days are in the given year in the date*)
 fun daysInYear(c as {year, month, day}:calendarDate) = 
 	if isLeapYear(c) then 366 else 365;
 
+(*returns a string representing that date in year/month/day format*)
+fun toString({year, month, day}:calendarDate) = 
+	Int.toString(year)^"/"^Int.toString(month)^"/"^Int.toString(day);
 
 val example = {year=1979, month=9, day=19} :calendarDate; (* Sep 19, 1979 *)
 val test1 = new(2010, 10, 31);
@@ -83,7 +87,7 @@ val test13 = new(2012, 8, 8);
 val test14 = new(2012, 9, 8);
 val test15 = new(2012, 10, 8);
 val test16 = new(2012, 11, 8);
-val test17 = new(2012, 12, 8);
+val test17 = new(1998, 12, 25);
 val test18 = new(1996, 1, 1);
 val test19 = new(2004, 2, 2);
 val test20 = new(1900, 3, 30);
