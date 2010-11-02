@@ -31,19 +31,59 @@ fun new(y, m, d) =
 	comes ealier or later than the second date. Returns equal if they are the same*)
 fun compare(c1 as {year=y1, month=m1, day=d1}:calendarDate, 
 	c2 as {year=y2, month=m2, day=d2}:calendarDate) =
-	if y1 < y2 then LESS
-	else if y1 > y2 then GREATER
-	else 
-		if m1 < m2 then LESS
-		else if m1 > m2 then GREATER
-		else
-			if d1 < d2 then LESS
-			else if d1 > d2 then GREATER
-			else EQUAL
-			
+		if y1 < y2 then LESS
+		else if y1 > y2 then GREATER
+		else 
+			if m1 < m2 then LESS
+			else if m1 > m2 then GREATER
+			else
+				if d1 < d2 then LESS
+				else if d1 > d2 then GREATER
+				else EQUAL
+
+(*	Post: returns the number of days that separate the two dates passed in*)
+fun daysBetween(c1 as {year=y1, month=m1, day=d1}:calendarDate, 
+	c2 as {year=y2, month=m2, day=d2}:calendarDate) =
+		if compare(c1, c2) = LESS then daysBetween(c2, c1)
+		else 0;
+		
+(* Post: returns true if that date takes place during a leap year, false otherwise*)
+fun isLeapYear({year, month, day}:calendarDate) =
+	if (year mod 4 = 0) then
+		if (year mod 100 = 0) andalso (year mod 400 = 0) then true
+		else if (year mod 100 = 0) then false
+		else true
+	else false;		
+	
+(* Returns how many days are in the given month in the date*)
+fun daysInMonth(c as {year, month=2, day}:calendarDate) = 
+	if isLeapYear(c) then 29 else 28
+|	daysInMonth({year, month, day}:calendarDate) = 
+		if month = 4 orelse month = 6 orelse month = 9 orelse month = 11 then 30
+		else 31;
+
+fun daysInYear(c as {year, month, day}:calendarDate) = 
+	if isLeapYear(c) then 366 else 365;
+
+
 val example = {year=1979, month=9, day=19} :calendarDate; (* Sep 19, 1979 *)
 val test1 = new(2010, 10, 31);
 val test2 = new(2010, 3, 20);
 val test3 = new(2011, 8, 11);
 val test4 = new(2010, 10, 29);
 val test5 = new(2010, 20, 30);
+val test6 = new(2011, 1, 1);
+val test7 = new(2012, 2, 2);
+val test8 = new(2012, 3, 3);
+val test9 = new(2012, 4, 5);
+val test10 = new(2012, 5, 6);
+val test11 = new(2012, 6, 7);
+val test12 = new(2012, 7, 7);
+val test13 = new(2012, 8, 8);
+val test14 = new(2012, 9, 8);
+val test15 = new(2012, 10, 8);
+val test16 = new(2012, 11, 8);
+val test17 = new(2012, 12, 8);
+val test18 = new(1996, 1, 1);
+val test19 = new(2004, 2, 2);
+val test20 = new(1900, 3, 30);
