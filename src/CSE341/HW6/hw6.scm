@@ -79,12 +79,3 @@
           ((= random0to4 2) (list '/ (list '+ (generate (- n 1)) (generate (- n 1))) 2.0))
           ((= random0to4 3) (list '/ (list 'round (list '* (generate (- n 1)) 10.0)) 10.0))
           ((= random0to4 4) (list '* (generate (- n 1)) (generate (- n 1))))))))
-
-; Test values, delete when done
-(define test1 (list 1 2 3 4 5))
-(define test2 '(2 8 3.1 2.4 3 6.5))
-(define test3 '(13 4 27 9 48))
-(define test4 '(38 4 19 7 -5))
-(define test5 '(1 2 -3 4))
-(define test6 '(3 19 7))
-(define test7 '(a b c d))
