@@ -42,9 +42,27 @@
         (cons half (cons half (stretch (cdr lst))))
         (cons (if (< half 0) (- half 1) (+ half 1)) (cons half (stretch (cdr lst))))))))
 
+; Pre: lst contains at least one element
+; Post: computes the sum of the squared values of all the numbers in the lst
+(define (sum-squares lst)
+  (foldl + 0
+         (map (lambda (n) (* n n)) lst)))
+
+; Pre: lst1 and lst2 contain no duplicates
+; Post: returns a list of all the ordered pairs that can be formed with one
+; value from lst1 and one value from the lst2. The list should be ordered
+; first by the order of values from the first list and within those groups, ordered by
+; values from the second list
+(define (all-pairs lst1 lst2)
+  (if (null? lst1)
+      ()
+      (append (map (lambda (y) (list (car lst1) y))lst2) (all-pairs (cdr lst1) lst2))))
 
 ; Test values, delete when done
 (define test1 (list 1 2 3 4 5))
 (define test2 '(2 8 3.1 2.4 3 6.5))
 (define test3 '(13 4 27 9 48))
 (define test4 '(38 4 19 7 -5))
+(define test5 '(1 2 -3 4))
+(define test6 '(3 19 7))
+(define test7 '(a b c d))
