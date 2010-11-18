@@ -41,6 +41,21 @@
           [(number? first) (cons first rest)]
           [else (display "first thing is not a number")])))
 
+; Pre:
+; Post: parses an element at the front of a list, replacing the tokens thatwere part
+; of the element with the numeric value of the element
+(define (parse-element lst)
+  (define (helper tokens)
+    (if (eqv? '^ (cadr tokens))
+        (let ((tokAns (parse-factor (cddr tokens))))
+          (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns))))
+        (if (integer? (car tokens))
+            tokens
+            (cons (exact->inexact (car tokens)) (cdr tokens)))))
+  (let ((factorResult (parse-factor lst)))
+    (cond [(null? (cdr factorResult)) factorResult]
+          [(helper factorResult)])))
+
 ; testing values delete after use
 (define test1 '(2 + 2))
 (define test2 '(- 2 + 2))
@@ -48,3 +63,13 @@
 (define test4 '(- - 2 + 2))
 (define test5 '(- - - - - 2 2))
 (define test6 '(+ - - + + - + - + 2 2))
+(define test7 '(2 ^ 2 ^ 3 THEN 450))
+(define test8 '(2 ^ 2 ^ -3 THEN 450))
+(define test9 '(2.3 ^ 4.5 * 7.3))
+(define test10 '(7.4 + 2.3))
+(define test11 '(2 ^ 3 ^ 4 ^ 5 2 ^ 3 4 ^ 5))
+(define test12 '(- - - 2 + 2))
+(define test13 '(2 ^ 3 - 4))
+(define test14 '(- - 2 ^ - - - 3 * 17))
+(define test15 '(2 ^ 3 ^ 2 / 14))
+(define test16 '(- - - 7 ^ - - 4 ^ - - - 2 < 74.5))
