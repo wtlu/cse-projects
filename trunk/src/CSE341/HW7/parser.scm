@@ -71,6 +71,20 @@
     (cond [(null? (cdr elementResult)) elementResult]
           [(helper elementResult)])))
 
+; Post: parses an expression at the front of a list, replacing the tokens that
+; were part of the expression with the numeric value of the expression
+(define (parse-expression lst)
+  (define (helper tokens)
+    (if (or (eqv? '+ (cadr tokens)) (eqv? '- (cadr tokens)))
+        (let ((tokAns (parse-term (cddr tokens))))
+          (if (eqv? '+ (cadr tokens)) 
+              (helper(cons (+ (car tokens) (car tokAns)) (cdr tokAns)))
+              (helper(cons (- (car tokens) (car tokAns)) (cdr tokAns)))))
+        tokens))
+  (let ((termResult (parse-term lst)))
+    (cond [(null? (cdr termResult)) termResult]
+          [(helper termResult)])))
+
 ; testing values delete after use
 (define test1 '(2 + 2))
 (define test2 '(- 2 + 2))
@@ -94,3 +108,7 @@
 (define test20 '(3 / 4 + 9.7))
 (define test21 '(2 * 3 * 4 + 3 * 8))
 (define test22 '(24 / 2 - 13.4))
+(define test23 '(12.4 - 7.8 * 3.5 THEN 40))
+(define test24 '(2 + 3.4 - 7.9 <= 7.4))
+(define test25 '(3 * 4 ^ 2 / 5 + SIN lparen 2 rparen))
+(define test26 '(15 - 3 - 2 foo 2 + 2))
