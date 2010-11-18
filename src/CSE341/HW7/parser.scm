@@ -42,8 +42,10 @@
           [(symbol=? 'lparen first) 
            (let ((answer (parse-expression rest)))
              (cond [(symbol? (car answer)) (error "illegal factor")] 
-                   [(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
-                   [(symbol=? 'rparen (cadr answer)) (cons (car answer) (cddr answer))]
+                   ;[(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
+                   [(and (not (null? (cdr answer))) 
+                         (symbol? (cadr answer)) (symbol=? 'rparen (cadr answer))) 
+                    (cons (car answer) (cddr answer))]
                    [(error "illegal factor")]))]
           [(assoc first functions)
            (let* ((ansExp (parse-factor rest))
