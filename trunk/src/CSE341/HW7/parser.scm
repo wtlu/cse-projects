@@ -41,10 +41,15 @@
           [(number? first) (cons first rest)]
           [(symbol=? 'lparen first) 
            (let ((answer (parse-expression rest)))
-             (cond [(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
+             (cond [(symbol? (car answer)) (error "illegal factor")] 
+                   [(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
                    [(symbol=? 'rparen (cadr answer)) (cons (car answer) (cddr answer))]
                    [(error "illegal factor")]))]
-          [else (display "first thing is not a number")])))
+          [(assoc first functions)
+           (let* ((ansExp (parse-factor rest))
+                 (ansCode (list (cdr (assoc first functions)) (car ansExp))))
+             (cons (eval ansCode) (cdr ansExp)))]
+          [else (error "illegal factor")])))
 
 ; Pre:
 ; Post: parses an element at the front of a list, replacing the tokens thatwere part
@@ -117,4 +122,8 @@
 (define test24 '(2 + 3.4 - 7.9 <= 7.4))
 (define test25 '(3 * 4 ^ 2 / 5 + SIN lparen 2 rparen))
 (define test26 '(15 - 3 - 2 foo 2 + 2))
-(define test27 '(lparen 2 + 3 rparen))
+(define test27 '(lparen 7.3 - 3.4 rparen + 3.4))
+(define test28 '(SQR lparen 12 + 3 * 6 - 5 rparen))
+(define test29 '(- lparen 2 + 2 rparen * 4.5))
+(define test30 '(3.8 2.9 OTHER STUFF))
+(define test31 '(- 7.9 3.4 * 7.2))
