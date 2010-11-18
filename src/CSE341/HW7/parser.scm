@@ -56,6 +56,22 @@
     (cond [(null? (cdr factorResult)) factorResult]
           [(helper factorResult)])))
 
+; Pre:
+; Post: parses a term at the front of a list, replacing the tokens that were part
+; of the term with the nermeric value of the term
+(define (parse-term lst)
+  (define (helper tokens)
+    (if (eqv? '* (cadr tokens))
+        (let ((tokAns (parse-element (cddr tokens))))
+          (helper(cons (* (car tokens) (car tokAns)) (cdr tokAns))))
+        (if (integer? (car tokens))
+            tokens
+            (cons (exact->inexact (car tokens)) (cdr tokens))))
+    )
+  (let ((elementResult (parse-element lst)))
+    (cond [(null? (cdr elementResult)) elementResult]
+          [(helper elementResult)])))
+
 ; testing values delete after use
 (define test1 '(2 + 2))
 (define test2 '(- 2 + 2))
@@ -73,3 +89,4 @@
 (define test14 '(- - 2 ^ - - - 3 * 17))
 (define test15 '(2 ^ 3 ^ 2 / 14))
 (define test16 '(- - - 7 ^ - - 4 ^ - - - 2 < 74.5))
+(define test17 '(2.5 * 4 + 9.8))
