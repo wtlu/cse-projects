@@ -39,6 +39,11 @@
            (let ((answer (parse-factor rest)))
              (cons (* -1 (car answer)) (cdr answer)))]
           [(number? first) (cons first rest)]
+          [(symbol=? 'lparen first) 
+           (let ((answer (parse-expression rest)))
+             (cond [(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
+                   [(symbol=? 'rparen (cadr answer)) (cons (car answer) (cddr answer))]
+                   [(error "illegal factor")]))]
           [else (display "first thing is not a number")])))
 
 ; Pre:
@@ -112,3 +117,4 @@
 (define test24 '(2 + 3.4 - 7.9 <= 7.4))
 (define test25 '(3 * 4 ^ 2 / 5 + SIN lparen 2 rparen))
 (define test26 '(15 - 3 - 2 foo 2 + 2))
+(define test27 '(lparen 2 + 3 rparen))
