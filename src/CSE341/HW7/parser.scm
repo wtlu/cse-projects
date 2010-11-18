@@ -19,7 +19,7 @@
 ; for each BASIC function
 (define functions
   '((SIN . sin) (COS . cos) (TAN . tan) (ATN . atan) (EXP . exp) (ABS . abs)
-    (LOG . log) (SQR . sqrt) (RND . rand) (INT . trunc)))
+                (LOG . log) (SQR . sqrt) (RND . rand) (INT . trunc)))
 
 ; have to define our own random number function because BASIC ignores its
 ; argument
@@ -32,26 +32,25 @@
 ; Post: parses a factor at the front of a list, replacing the tokens that were part
 ; of the factor with the numeric value of the factor
 (define (parse-factor lst) 
-  (cond [(not (null? lst)) (let ((first (car lst))
-        (rest (cdr lst)))
-    (cond [(eqv? '+ first) (parse-factor rest)] 
-          [(eqv? '- first) 
-           (let ((answer (parse-factor rest)))
-             (cons (* -1 (car answer)) (cdr answer)))]
-          [(number? first) (cons first rest)]
-          [(symbol=? 'lparen first) 
-           (let ((answer (parse-expression rest)))
-             (cond [(symbol? (car answer)) (error "illegal factor")] 
-                   ;[(null? (cdr answer)) (error "illegal factor")] ;[(symbol=? 'rparen (car answer)) (error "illegal factor")] 
-                   [(and (not (null? (cdr answer))) 
-                         (symbol? (cadr answer)) (symbol=? 'rparen (cadr answer))) 
-                    (cons (car answer) (cddr answer))]
-                   [(error "illegal factor")]))]
-          [(assoc first functions)
-           (let* ((ansExp (parse-factor rest))
-                 (ansCode (list (cdr (assoc first functions)) (car ansExp))))
-             (cons (eval ansCode) (cdr ansExp)))]
-          [else (error "illegal factor")]))]
+  (cond [(not (null? lst)) 
+         (let ((first (car lst))
+               (rest (cdr lst)))
+           (cond [(eqv? '+ first) (parse-factor rest)] 
+                 [(eqv? '- first) 
+                  (let ((answer (parse-factor rest)))
+                    (cons (* -1 (car answer)) (cdr answer)))]
+                 [(number? first) (cons first rest)]
+                 [(symbol=? 'lparen first) 
+                  (let ((answer (parse-expression rest)))
+                    (cond [(and (not (null? (cdr answer))) 
+                                (symbol? (cadr answer)) (symbol=? 'rparen (cadr answer))) 
+                           (cons (car answer) (cddr answer))]
+                          [(error "illegal factor")]))]
+                 [(assoc first functions)
+                  (let* ((ansExp (parse-factor rest))
+                         (ansCode (list (cdr (assoc first functions)) (car ansExp))))
+                    (cons (eval ansCode) (cdr ansExp)))]
+                 [else (error "illegal factor")]))]
         [else (error "illegal factor")]))
 
 ; Pre: valid lst of symbols
@@ -62,13 +61,13 @@
     (cond [(null? (cdr tokens)) tokens] 
           [(eqv? '^ (cadr tokens))
            (if (null? (cddr tokens)) (error "illegal element")
-           (let ((tokAns (parse-factor (cddr tokens))))
-             (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns)))))]
+               (let ((tokAns (parse-factor (cddr tokens))))
+                 (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns)))))]
           [(integer? (car tokens)) tokens]
           [(cons (exact->inexact (car tokens)) (cdr tokens))]))
   (cond [(not (null? lst)) (let ((factorResult (parse-factor lst)))
-    (cond [(null? (cdr factorResult)) factorResult]
-          [(helper factorResult)]))]
+                             (cond [(null? (cdr factorResult)) factorResult]
+                                   [(helper factorResult)]))]
         [else (error "illegal element")]))
 
 ; Pre: valid lst of symbols
@@ -77,14 +76,15 @@
 (define (parse-term lst)
   (define (helper tokens)
     (cond [(or (eqv? '* (cadr tokens)) (eqv? '/ (cadr tokens)))
-        (let ((tokAns (parse-element (cddr tokens))))
-          (if (eqv? '* (cadr tokens)) 
-              (helper(cons (* (car tokens) (car tokAns)) (cdr tokAns)))
-              (helper(cons (exact->inexact(/ (car tokens) (car tokAns))) (cdr tokAns)))))]
-        [tokens]))
-  (let ((elementResult (parse-element lst)))
-    (cond [(null? (cdr elementResult)) elementResult]
-          [(helper elementResult)])))
+           (let ((tokAns (parse-element (cddr tokens))))
+             (if (eqv? '* (cadr tokens)) 
+                 (helper(cons (* (car tokens) (car tokAns)) (cdr tokAns)))
+                 (helper(cons (exact->inexact(/ (car tokens) (car tokAns))) (cdr tokAns)))))]
+          [tokens]))
+  (cond [ (not(null? lst)) (let ((elementResult (parse-element lst)))
+                             (cond [(null? (cdr elementResult)) elementResult]
+                                   [(helper elementResult)]))]
+        [else (error "illegal term")]))
 
 ; Pre: valid lst of symbols
 ; Post: parses an expression at the front of a list, replacing the tokens that
@@ -99,8 +99,8 @@
                  (helper(cons (- (car tokens) (car tokAns)) (cdr tokAns)))))]
           [tokens]))
   (cond [(not (null? lst)) (let ((termResult (parse-term lst)))
-    (cond [(null? (cdr termResult)) termResult]
-          [(helper termResult)]))]
+                             (cond [(null? (cdr termResult)) termResult]
+                                   [(helper termResult)]))]
         [else (error "illegal expression")]))
 
 ; Pre: valid lst of symbols
@@ -108,13 +108,13 @@
 ; of the test with the boolean value of the test
 (define (parse-test lst)
   (let* ((expAns (parse-expression lst))
-        (operator (cadr expAns))
-        (modedOp (if (symbol=? '<> operator) 'equal? operator))
-        (expAns2 (parse-expression (cddr expAns)))
-        (code (list modedOp (car expAns) (car expAns2))))
+         (operator (cadr expAns))
+         (modedOp (if (symbol=? '<> operator) 'equal? operator))
+         (expAns2 (parse-expression (cddr expAns)))
+         (code (list modedOp (car expAns) (car expAns2))))
     (if (symbol=? '<> operator) (cons (not(eval code)) (cdr expAns2))
         (cons (eval code) (cdr expAns2)))))
-    
+
 
 ; testing values delete after use
 (define test1 '(2 + 2))
