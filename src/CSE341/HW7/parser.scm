@@ -27,3 +27,24 @@
 
 ; have to define our own trunc function because BASIC returns an int
 (define (trunc n) (inexact->exact (truncate n)))
+
+; Pre:
+; Post: parses a factor at the front of a list, replacing the tokens that were part
+; of the factor with the numeric value of the factor
+(define (parse-factor lst) 
+  (let ((first (car lst))
+        (rest (cdr lst)))
+    (cond [(eqv? '+ first) (parse-factor rest)] 
+          [(eqv? '- first) 
+           (let ((answer (parse-factor rest)))
+             (cons (* -1 (car answer)) (cdr answer)))]
+          [(number? first) (cons first rest)]
+          [else (display "first thing is not a number")])))
+
+; testing values delete after use
+(define test1 '(2 + 2))
+(define test2 '(- 2 + 2))
+(define test3 '(+ 2 + 2))
+(define test4 '(- - 2 + 2))
+(define test5 '(- - - - - 2 2))
+(define test6 '(+ - - + + - + - + 2 2))
