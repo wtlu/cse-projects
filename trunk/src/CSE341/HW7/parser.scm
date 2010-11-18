@@ -61,13 +61,12 @@
 ; of the term with the nermeric value of the term
 (define (parse-term lst)
   (define (helper tokens)
-    (if (eqv? '* (cadr tokens))
+    (if (or (eqv? '* (cadr tokens)) (eqv? '/ (cadr tokens)))
         (let ((tokAns (parse-element (cddr tokens))))
-          (helper(cons (* (car tokens) (car tokAns)) (cdr tokAns))))
-        (if (integer? (car tokens))
-            tokens
-            (cons (exact->inexact (car tokens)) (cdr tokens))))
-    )
+          (if (eqv? '* (cadr tokens)) 
+              (helper(cons (* (car tokens) (car tokAns)) (cdr tokAns)))
+              (helper(cons (exact->inexact(/ (car tokens) (car tokAns))) (cdr tokAns)))))
+        tokens))
   (let ((elementResult (parse-element lst)))
     (cond [(null? (cdr elementResult)) elementResult]
           [(helper elementResult)])))
@@ -90,3 +89,8 @@
 (define test15 '(2 ^ 3 ^ 2 / 14))
 (define test16 '(- - - 7 ^ - - 4 ^ - - - 2 < 74.5))
 (define test17 '(2.5 * 4 + 9.8))
+(define test18 '(38.7 / 2 / 3 THEN 210))
+(define test19 '(7.4 * lparen 2.4 - 3.8 rparen / 4 - 8.7))
+(define test20 '(3 / 4 + 9.7))
+(define test21 '(2 * 3 * 4 + 3 * 8))
+(define test22 '(24 / 2 - 13.4))
