@@ -56,12 +56,15 @@
 ; of the element with the numeric value of the element
 (define (parse-element lst)
   (define (helper tokens)
-    (if (eqv? '^ (cadr tokens))
-        (let ((tokAns (parse-factor (cddr tokens))))
-          (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns))))
-        (if (integer? (car tokens))
-            tokens
-            (cons (exact->inexact (car tokens)) (cdr tokens)))))
+    (cond [(null? (cdr tokens)) tokens] 
+          [(eqv? '^ (cadr tokens))
+           (let ((tokAns (parse-factor (cddr tokens))))
+             (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns))))]
+           ;(if (integer? (car tokens))
+            ;   tokens
+             ;  (cons (exact->inexact (car tokens)) (cdr tokens)))]
+          [(integer? (car tokens)) tokens]
+          [(cons (exact->inexact (car tokens)) (cdr tokens))]))
   (let ((factorResult (parse-factor lst)))
     (cond [(null? (cdr factorResult)) factorResult]
           [(helper factorResult)])))
@@ -95,6 +98,16 @@
     (cond [(null? (cdr termResult)) termResult]
           [(helper termResult)])))
 
+; Post: parses a test at teh front of the list, replacing the tokens that were part
+; of the test with the boolean value of the test
+(define (parse-test lst)
+  (let* ((expAns (parse-expression lst))
+        (operator (cadr expAns))
+        (expAns2 (parse-expression (cddr expAns)))
+        (code (list operator (car expAns) (car expAns2))))
+    (cons (eval code) (cdr expAns2))))
+    
+
 ; testing values delete after use
 (define test1 '(2 + 2))
 (define test2 '(- 2 + 2))
@@ -127,3 +140,6 @@
 (define test29 '(- lparen 2 + 2 rparen * 4.5))
 (define test30 '(3.8 2.9 OTHER STUFF))
 (define test31 '(- 7.9 3.4 * 7.2))
+(define test32 '(3.4 < 7.8 THEN 19))
+(define test33 '(2.3 - 4.7 ^ 2.4 <> SQR lparen 8 - 4.2 ^ 2 * 9 rparen FOO))
+(define test34 '(2 ^ 4 = 4 ^ 2))
