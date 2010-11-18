@@ -32,7 +32,7 @@
 ; Post: parses a factor at the front of a list, replacing the tokens that were part
 ; of the factor with the numeric value of the factor
 (define (parse-factor lst) 
-  (let ((first (car lst))
+  (cond [(not (null? lst)) (let ((first (car lst))
         (rest (cdr lst)))
     (cond [(eqv? '+ first) (parse-factor rest)] 
           [(eqv? '- first) 
@@ -51,7 +51,8 @@
            (let* ((ansExp (parse-factor rest))
                  (ansCode (list (cdr (assoc first functions)) (car ansExp))))
              (cons (eval ansCode) (cdr ansExp)))]
-          [else (error "illegal factor")])))
+          [else (error "illegal factor")]))]
+        [else (error "illegal factor")]))
 
 ; Pre:
 ; Post: parses an element at the front of a list, replacing the tokens thatwere part
@@ -60,16 +61,15 @@
   (define (helper tokens)
     (cond [(null? (cdr tokens)) tokens] 
           [(eqv? '^ (cadr tokens))
+           (if (null? (cddr tokens)) (error "illegal element")
            (let ((tokAns (parse-factor (cddr tokens))))
-             (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns))))]
-           ;(if (integer? (car tokens))
-            ;   tokens
-             ;  (cons (exact->inexact (car tokens)) (cdr tokens)))]
+             (helper(cons (expt (car tokens) (car tokAns)) (cdr tokAns)))))]
           [(integer? (car tokens)) tokens]
           [(cons (exact->inexact (car tokens)) (cdr tokens))]))
-  (let ((factorResult (parse-factor lst)))
+  (cond [(not (null? lst)) (let ((factorResult (parse-factor lst)))
     (cond [(null? (cdr factorResult)) factorResult]
-          [(helper factorResult)])))
+          [(helper factorResult)]))]
+        [else (error "illegal element")]))
 
 ; Pre:
 ; Post: parses a term at the front of a list, replacing the tokens that were part
@@ -97,9 +97,10 @@
                  (helper(cons (+ (car tokens) (car tokAns)) (cdr tokAns)))
                  (helper(cons (- (car tokens) (car tokAns)) (cdr tokAns)))))]
           [tokens]))
-  (let ((termResult (parse-term lst)))
+  (cond [(not (null? lst)) (let ((termResult (parse-term lst)))
     (cond [(null? (cdr termResult)) termResult]
-          [(helper termResult)])))
+          [(helper termResult)]))]
+        [else (error "illegal expression")]))
 
 ; Post: parses a test at teh front of the list, replacing the tokens that were part
 ; of the test with the boolean value of the test
