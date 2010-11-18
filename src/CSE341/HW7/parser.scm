@@ -28,7 +28,7 @@
 ; have to define our own trunc function because BASIC returns an int
 (define (trunc n) (inexact->exact (truncate n)))
 
-; Pre:
+; Pre: valid lst of symbols
 ; Post: parses a factor at the front of a list, replacing the tokens that were part
 ; of the factor with the numeric value of the factor
 (define (parse-factor lst) 
@@ -54,7 +54,7 @@
           [else (error "illegal factor")]))]
         [else (error "illegal factor")]))
 
-; Pre:
+; Pre: valid lst of symbols
 ; Post: parses an element at the front of a list, replacing the tokens thatwere part
 ; of the element with the numeric value of the element
 (define (parse-element lst)
@@ -71,7 +71,7 @@
           [(helper factorResult)]))]
         [else (error "illegal element")]))
 
-; Pre:
+; Pre: valid lst of symbols
 ; Post: parses a term at the front of a list, replacing the tokens that were part
 ; of the term with the nermeric value of the term
 (define (parse-term lst)
@@ -86,6 +86,7 @@
     (cond [(null? (cdr elementResult)) elementResult]
           [(helper elementResult)])))
 
+; Pre: valid lst of symbols
 ; Post: parses an expression at the front of a list, replacing the tokens that
 ; were part of the expression with the numeric value of the expression
 (define (parse-expression lst)
@@ -102,6 +103,7 @@
           [(helper termResult)]))]
         [else (error "illegal expression")]))
 
+; Pre: valid lst of symbols
 ; Post: parses a test at teh front of the list, replacing the tokens that were part
 ; of the test with the boolean value of the test
 (define (parse-test lst)
