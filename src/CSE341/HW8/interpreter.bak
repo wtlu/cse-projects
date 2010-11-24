@@ -1,0 +1,9 @@
+; CSE341
+; Wei-Ting Lu 
+; 11/22/2010
+; TA: Robert Johnson 
+; Quiz Section: AA
+; HW8 - This program implements a subset of the BASIC programming language
+
+(include "hw7.scm")
+(include "hw8-support.scm")
