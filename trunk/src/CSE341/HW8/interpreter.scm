@@ -11,6 +11,10 @@
 (define (run-program lst)
   (cond [(null? lst) ()]
         [(null? (car lst)) ()]
-        [(let ((firstLine (car lst))
-               (rest (cdr lst)))
-           (display (append(firstLine (run-program(rest))))))]))
+        [(let* ((firstLine (car lst))
+               ;(debug1 (display firstLine))
+               (rest (cdr lst))
+               ;(debug2 (display rest))
+               )
+           (cond [(symbol=? 'END (caadr firstLine)) (display '"PROGRAM TERMINATED")]
+                 [(symbol=? 'REM (caadr firstLine)) (run-program rest)]))]))
