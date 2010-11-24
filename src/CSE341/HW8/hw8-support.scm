@@ -1,6 +1,6 @@
-; Stuart Reges
-; 11/20/09
-; Support file for hw8
+; CSE 341 support file for BASIC Interpreter
+; originally written by Stuart Reges, 11/20/09
+; modified by Marty Stepp, 11/20/2010
 
 (require (lib "13.ss" "srfi")) ; for renumber
 
@@ -102,7 +102,7 @@
                                ((> (caar lst) number) (cons line lst))
                                ((= (caar lst) number) (cons line (cdr lst)))
                                (else (cons (car lst) (search (cdr lst))))))))
-	(set! program (if (equal? (string-trim text) "")
+	(set! program (if (equal? text "")
 			  (delete program)
 			  (search program)))))
 
