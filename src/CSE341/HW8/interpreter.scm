@@ -52,5 +52,13 @@
 ; Pre: statement is a print statement with correct line number
 ; Post: process the print statement
 (define (process-print lst n)
+  ;(display "to print:")
+  ;(display lst)
   (cond [(null? lst) (newline)]
-        [else (display(car(try-parse-expression (subsitude-expression lst n) n))) (newline)]))
+        [(let ((first (car lst))
+               (rest (cdr lst)))
+           (cond [(and (symbol? (car lst)) (symbol=? 'comma (car lst))) (display " ")
+                  (if (not (null? rest)) (process-print rest n))]
+                 [(string? (car lst)) (display (car lst)) (process-print rest n)]
+                 [else (let ((newResult (try-parse-expression (subsitude-expression lst n) n))) 
+                         (display(car newResult)) (process-print (cdr newResult) n))]))]))
