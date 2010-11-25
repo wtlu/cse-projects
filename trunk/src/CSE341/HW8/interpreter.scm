@@ -37,10 +37,11 @@
     (display "\nThe rest of the line is ")
     (display restLine) (newline)
   (cond [(and (variable? varName) (symbol=? '= equalsSign))
-         (let ((resultLst(subsitude-expression restLine n)))
+         (let* ((resultLst(subsitude-expression restLine n))
+                (resultLst2(try-parse-expression resultLst n)))
            (display "the resulting lst is")
-           (display resultLst)
-           (display "processing let statement") (newline) (set! symbolTable (cons (cons varName (try-parse-expression (subsitude-expression restLine n) n)) symbolTable))
+           (display resultLst2)
+           (display "processing let statement") (newline) (set! symbolTable (cons (cons varName (car(try-parse-expression (subsitude-expression restLine n) n))) symbolTable))
            (display symbolTable))]
         [(display "ILLEGAL LET")])))
 
@@ -57,7 +58,7 @@
                                     (let ((lookup (assoc first symbolTable)))
                                       (display "lookup is:")
                                       (display lookup)
-                                      (if lookup (cons (cadr lookup) (subsitude-expression rest n))
+                                      (if lookup (cons (cdr lookup) (subsitude-expression rest n))
                                           (error "LINE" n': "DEBUG ILLEGAL EXPRESSION")))]
                  [else (cons first (subsitude-expression rest n))]))])
   ;(display "result lst is:")
