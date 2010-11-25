@@ -5,7 +5,7 @@
 ; Quiz Section: AA
 ; HW8 - This program implements a subset of the BASIC programming language
 
-(include "hw7.scm")
+(include "parser.scm")
 (include "hw8-support.scm")
 
 ; cache of declared variables, initially empty
