@@ -23,8 +23,7 @@
            (cond [(symbol=? 'END (caadr firstLine)) (display "PROGRAM TERMINATED")]
                  [(symbol=? 'REM (caadr firstLine)) (begin (display "comment")(newline)(run-program rest))]
                  [(symbol=? 'LET (caadr firstLine)) (begin (display "let ") (newline) (process-let (cdadr firstLine) (car firstLine))(run-program rest))]
-                 [(symbol=? 'PRINT (caadr firstLine)) (let* ()
-                                                        (begin (display "print statement")(newline)(run-program rest)))]))]))
+                 [(symbol=? 'PRINT (caadr firstLine)) (begin (display "print statement")(newline)(process-print (cdadr firstLine) (car firstLine)) (run-program rest))]))]))
 
 ; Pre: statement is a let statement with correct line number
 ; Post: process the let statement
@@ -64,3 +63,9 @@
   ;(display "result lst is:")
   ;(display lst) (newline)
   )
+
+; Pre: statement is a print statement with correct line number
+; Post: process the print statement
+(define (process-print lst n)
+  (cond [(null? lst) (newline)]
+        [else (display(car(try-parse-expression (subsitude-expression lst n) n))) (newline)]))
