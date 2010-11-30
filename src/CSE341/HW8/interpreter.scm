@@ -34,7 +34,7 @@
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
                  [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
                  [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
-                 [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
+                 [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement") (process-gosub (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
                  [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
                  [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement")(run-program rest)]))]))
@@ -147,5 +147,6 @@
 (define (process-gosub lst n)
   (cond [inSubroutine (error (string-append "LINE " (number->string n) ": ALREADY IN SUBROUTINE"))] 
         [(and (not (null? lst)) (number? (car lst)) (null? (cdr lst)))
+         (set! inSubroutine #t)
          (run-program (process-goto (list (car lst)) n))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL GOSUB"))]))
