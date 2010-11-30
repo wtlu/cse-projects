@@ -42,7 +42,7 @@
 ; Pre: statement is a end statement
 ; Post: process the end statement
 (define (process-end n)
-  (if (inSubroutine) (error (string-append "LINE " (number->string n) ": MISSING RETURN"))
+  (if inSubroutine (error (string-append "LINE " (number->string n) ": MISSING RETURN"))
       (display "PROGRAM TERMINATED")))
 
 ; Pre: statement is a let statement with correct line number
@@ -139,3 +139,13 @@
                  [(car lineToProcess) (run-program (process-goto (list (caddr lineToProcess)) n))]
                  [(not (car lineToProcess)) (run-program restCode)]
                  [(error (string-append "LINE " (number->string n) ": ILLEGAL IF"))]))]))
+
+; Pre: statement is a gosub statement with correct line number.
+; Post: process the gosub statement. If gosub sommand is not followed by an integer or if it has
+; extraneous text after the integer, then thorw ILLEGAL GOSUB. If it tries to execute two GOSUB
+; commands in a row without a call on return in between, will throw ALREADY IN SUBROUTINE
+(define (process-gosub lst n)
+  (cond [inSubroutine (error (string-append "LINE " (number->string n) ": ALREADY IN SUBROUTINE"))] 
+        [(and (not (null? lst)) (number? (car lst)) (null? (cdr lst)))
+         (run-program (process-goto (list (car lst)) n))]
+        [(error (string-append "LINE " (number->string n) ": ILLEGAL GOSUB"))]))
