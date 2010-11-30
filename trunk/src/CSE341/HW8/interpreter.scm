@@ -11,9 +11,13 @@
 ; cache of declared variables, initially empty
 (define symbolTable null)
 
+; the whole program in one giant list, initially empty
+(define refWholeCode null)
+
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
 (define (run-program lst)
+  (set! refWholeCode lst)
   (cond [(null? lst) ()]
         [(null? (car lst)) ()]
         [(let* ((firstLine (car lst))
@@ -25,7 +29,7 @@
                  [(symbol=? 'INPUT (caadr firstLine)) (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
-                 [(symbol=? 'GOTO (caadr firstLine)) (display "GOTO statement")(run-program rest)]
+                 [(symbol=? 'GOTO (caadr firstLine)) (display "GOTO statement") (run-program (process-goto (cdadr firstLine) (car firstLine)))]
                  [(symbol=? 'IF (caadr firstLine)) (display "IF statement")(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
                  [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
@@ -74,7 +78,7 @@
 ; Post: process the input statement
 (define (process-input lst n)
   ;(display "input statement") (newline)
-  (cond [(null? lst) (error "LINE" n': "ILLEGAL INPUT COMMAND")]
+  (cond [(null? lst) (error (string-append "LINE " (number->string n) ": ILLEGAL INPUT COMMAND"))]
         [(let ((varName (car lst))
                (rest (cdr lst)))
            ;(display varName) (newline)
@@ -83,6 +87,30 @@
                   ;(display "now processing and getting input")
                   (let ((inputVal (read)))
                     (if (number? inputVal) (process-let (list varName '= inputVal) n) 
-                        (error "LINE" n': "INPUT MUST BE A NUMBER")))]))]
-                 [(error "LINE" n': "ILLEGAL INPUT COMMAND")]))
+                        (error (string-append "LINE " (number->string n) ": INPUT MUST BE A NUMBER"))))]))]
+                 [(error (string-append "LINE " (number->string n) ": ILLEGAL INPUT COMMAND"))]))
+
+; Pre: statement is a goto statement with correct line number
+; Post: process the goto statement. If line number does not exists, throws NO SUCH LINE NUMBER
+; If GOTO is followed by non-integer or has extraneous text after the integer throws ILLEGAL GOTO
+(define (process-goto lst n)
   
+  ; Pre: refWholeCode is valid and already set to the BASIC code initally passed in
+  ; to run-program
+  ; Post: finds the the line number that match the given jumpHere and returns the
+  ; code that starts with that line. If line number does not exist, throws error
+  ; NO SUCH LINE NUMBER
+  (define (findLine lst jumpHere n)
+    (display "goto statement") (newline)
+    (cond [(null? lst) (error (string-append "LINE " (number->string n) ": NO SUCH LINE NUMBER"))]
+          [(let ((firstLineCode (car lst)))
+             (if (= (car firstLineCode) jumpHere)
+                 lst
+                 (findLine (cdr lst) jumpHere n)))]))
+  (display refWholeCode) (newline)
+  (cond [(null? lst) (error (string-append "LINE " (number->string n) ": ILLEGAL GOTO"))]
+        [(let ((lineNum (car lst))
+               (rest (cdr lst)))
+           (cond [(and (number? lineNum) (null? rest)) (findLine refWholeCode lineNum n)]
+                 [(error (string-append "LINE " (number->string n) ": ILLEGAL GOTO"))]))]))
+       
