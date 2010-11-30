@@ -22,8 +22,15 @@
                  [(symbol=? 'REM (caadr firstLine)) (run-program rest)]
                  [(symbol=? 'LET (caadr firstLine)) 
                   (begin (process-let (cdadr firstLine) (car firstLine))(run-program rest))]
+                 [(symbol=? 'INPUT (caadr firstLine)) (display "INPUT statement") (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'PRINT (caadr firstLine)) 
-                  (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]))]))
+                  (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
+                 [(symbol=? 'GOTO (caadr firstLine)) (display "GOTO statement")(run-program rest)]
+                 [(symbol=? 'IF (caadr firstLine)) (display "IF statement")(run-program rest)]
+                 [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
+                 [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
+                 [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
+                 [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement")(run-program rest)]))]))
 
 ; Pre: statement is a let statement with correct line number
 ; Post: process the let statement
@@ -62,3 +69,20 @@
                  [(string? (car lst)) (display (car lst)) (process-print rest n)]
                  [else (let ((newResult (try-parse-expression (subsitude-expression lst n) n))) 
                          (display(car newResult)) (process-print (cdr newResult) n))]))]))
+
+; Pre: statement is a input statement with correct line number
+; Post: process the input statement
+(define (process-input lst n)
+  (display "input statement") (newline)
+  (cond [(null? lst) (error "LINE" n': "ILLEGAL INPUT COMMAND")]
+        [(let ((varName (car lst))
+               (rest (cdr lst)))
+           ;(display varName) (newline)
+           ;(display rest) (newline)
+           (cond [(and (variable? varName) (null? rest))
+                  ;(display "now processing and getting input")
+                  (let ((inputVal (read)))
+                    (if (number? inputVal) (process-let (list varName '= inputVal) n) 
+                        (error "LINE" n': "INPUT MUST BE A NUMBER")))]))]
+                 [(error "LINE" n': "ILLEGAL INPUT COMMAND")]))
+  
