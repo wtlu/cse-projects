@@ -1,0 +1,4 @@
+10 FOR X = 1 TO 0
+20 PRINT "X =", X
+30 NEXT X
+40 END
