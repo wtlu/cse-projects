@@ -22,7 +22,7 @@
                  [(symbol=? 'REM (caadr firstLine)) (run-program rest)]
                  [(symbol=? 'LET (caadr firstLine)) 
                   (begin (process-let (cdadr firstLine) (car firstLine))(run-program rest))]
-                 [(symbol=? 'INPUT (caadr firstLine)) (display "INPUT statement") (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
+                 [(symbol=? 'INPUT (caadr firstLine)) (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
                  [(symbol=? 'GOTO (caadr firstLine)) (display "GOTO statement")(run-program rest)]
@@ -73,7 +73,7 @@
 ; Pre: statement is a input statement with correct line number
 ; Post: process the input statement
 (define (process-input lst n)
-  (display "input statement") (newline)
+  ;(display "input statement") (newline)
   (cond [(null? lst) (error "LINE" n': "ILLEGAL INPUT COMMAND")]
         [(let ((varName (car lst))
                (rest (cdr lst)))
