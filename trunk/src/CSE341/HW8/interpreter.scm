@@ -14,6 +14,9 @@
 ; the whole program in one giant list, initially empty
 (define refWholeCode null)
 
+; whether currently in GOSUB call, initially false
+(define inSubroutine #f)
+
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
 (define (run-program lst)
@@ -22,7 +25,7 @@
         [(null? (car lst)) ()]
         [(let* ((firstLine (car lst))
                (rest (cdr lst)))
-           (cond [(symbol=? 'END (caadr firstLine)) (display "PROGRAM TERMINATED")]
+           (cond [(symbol=? 'END (caadr firstLine)) (process-end (car firstLine))]
                  [(symbol=? 'REM (caadr firstLine)) (run-program rest)]
                  [(symbol=? 'LET (caadr firstLine)) 
                   (begin (process-let (cdadr firstLine) (car firstLine))(run-program rest))]
@@ -30,11 +33,17 @@
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
                  [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
-                 [(symbol=? 'IF (caadr firstLine)) (display "IF statement") (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
+                 [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
                  [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
                  [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
                  [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement")(run-program rest)]))]))
+
+; Pre: statement is a end statement
+; Post: process the end statement
+(define (process-end n)
+  (if (inSubroutine) (error (string-append "LINE " (number->string n) ": MISSING RETURN"))
+      (display "PROGRAM TERMINATED")))
 
 ; Pre: statement is a let statement with correct line number
 ; Post: process the let statement
