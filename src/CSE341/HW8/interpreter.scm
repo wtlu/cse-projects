@@ -150,3 +150,9 @@
          (set! inSubroutine #t)
          (run-program (process-goto (list (car lst)) n))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL GOSUB"))]))
+
+; Pre: statement is a return statement with correct line number
+; Post process the return statement.
+(define (process-return lst n)
+  (display "work in progress")
+  )
