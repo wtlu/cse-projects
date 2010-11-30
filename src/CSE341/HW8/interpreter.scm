@@ -29,7 +29,7 @@
                  [(symbol=? 'INPUT (caadr firstLine)) (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
-                 [(symbol=? 'GOTO (caadr firstLine)) (display "GOTO statement") (run-program (process-goto (cdadr firstLine) (car firstLine)))]
+                 [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
                  [(symbol=? 'IF (caadr firstLine)) (display "IF statement")(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
                  [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
@@ -101,13 +101,12 @@
   ; code that starts with that line. If line number does not exist, throws error
   ; NO SUCH LINE NUMBER
   (define (findLine lst jumpHere n)
-    (display "goto statement") (newline)
     (cond [(null? lst) (error (string-append "LINE " (number->string n) ": NO SUCH LINE NUMBER"))]
           [(let ((firstLineCode (car lst)))
              (if (= (car firstLineCode) jumpHere)
                  lst
                  (findLine (cdr lst) jumpHere n)))]))
-  (display refWholeCode) (newline)
+  ;(display refWholeCode) (newline)
   (cond [(null? lst) (error (string-append "LINE " (number->string n) ": ILLEGAL GOTO"))]
         [(let ((lineNum (car lst))
                (rest (cdr lst)))
