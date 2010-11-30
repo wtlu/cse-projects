@@ -30,7 +30,7 @@
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
                  [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
-                 [(symbol=? 'IF (caadr firstLine)) (display "IF statement") (process-if (cdadr firstLine) (car firstLine))] ;(run-program rest)]
+                 [(symbol=? 'IF (caadr firstLine)) (display "IF statement") (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement")(run-program rest)]
                  [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
                  [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
@@ -106,7 +106,7 @@
              (if (= (car firstLineCode) jumpHere)
                  lst
                  (findLine (cdr lst) jumpHere n)))]))
-  (display refWholeCode) (newline)
+  ;(display refWholeCode) (newline)
   (cond [(null? lst) (error (string-append "LINE " (number->string n) ": ILLEGAL GOTO"))]
         [(let ((lineNum (car lst))
                (rest (cdr lst)))
@@ -117,16 +117,16 @@
 ; the line number should be a simple integer
 ; Post: process the if statement. If the word TEHN is missing or if it's not followed by an integer
 ; or if the integer has extraneous text after it, thows ILLEGAL IF
-(define (process-if lst n)
-  (display "process if statemnt") (newline)
+(define (process-if lst restCode n)
+  ;(display "process if statemnt") (newline)
   (cond [(null? lst) (error (string-append "LINE " (number->string n) ": ILLEGAL IF"))]
         [(let ((lineToProcess (try-parse-test (subsitude-expression lst n) n)))
-           (display lineToProcess) (newline)
+           ;(display lineToProcess) (newline)
            (cond [(or (null? lineToProcess) (null? (cdr lineToProcess)) 
                       (not (and (symbol? (cadr lineToProcess)) 
                                 (symbol=? 'THEN (cadr lineToProcess))))
                       (null? (cddr lineToProcess)) (not (number? (caddr lineToProcess)))) 
                   (error (string-append "LINE " (number->string n) ": ILLEGAL IF"))]
-                 [(car lineToProcess) (display "true jump") (run-program (process-goto (list (caddr lineToProcess)) n))]
-                 [(not (car lineToProcess)) (display "not true, continue") (run-program (process-goto (list (+ n 1))))]
+                 [(car lineToProcess) (run-program (process-goto (list (caddr lineToProcess)) n))]
+                 [(not (car lineToProcess)) (run-program restCode)]
                  [(error (string-append "LINE " (number->string n) ": ILLEGAL IF"))]))]))
