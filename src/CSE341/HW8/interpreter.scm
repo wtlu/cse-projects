@@ -17,6 +17,9 @@
 ; whether currently in GOSUB call, initially false
 (define inSubroutine #f)
 
+; the statement to go to after gosub call, if called, initally empty
+(define refCodeAfterGoSub null)
+
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
 (define (run-program lst)
@@ -34,8 +37,8 @@
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
                  [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
                  [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
-                 [(symbol=? 'GOSUB (caadr firstLine)) (display "GOSUB statement") (process-gosub (cdadr firstLine) (car firstLine)) (run-program rest)]
-                 [(symbol=? 'RETURN (caadr firstLine)) (display "RETURN statement")(run-program rest)]
+                 [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
+                 [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
                  [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
                  [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement")(run-program rest)]))]))
 
@@ -144,15 +147,17 @@
 ; Post: process the gosub statement. If gosub sommand is not followed by an integer or if it has
 ; extraneous text after the integer, then thorw ILLEGAL GOSUB. If it tries to execute two GOSUB
 ; commands in a row without a call on return in between, will throw ALREADY IN SUBROUTINE
-(define (process-gosub lst n)
+(define (process-gosub lst rest n)
   (cond [inSubroutine (error (string-append "LINE " (number->string n) ": ALREADY IN SUBROUTINE"))] 
         [(and (not (null? lst)) (number? (car lst)) (null? (cdr lst)))
-         (set! inSubroutine #t)
+         (set! inSubroutine #t) (set! refCodeAfterGoSub rest)
          (run-program (process-goto (list (car lst)) n))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL GOSUB"))]))
 
 ; Pre: statement is a return statement with correct line number
 ; Post process the return statement.
 (define (process-return lst n)
-  (display "work in progress")
-  )
+  ;(display "return statement") (newline)
+  (cond [(not inSubroutine) (error (string-append "LINE " (number->string n) ": NOT IN SUBROUTINE"))]
+        [(null? lst) (set! inSubroutine #f)(run-program refCodeAfterGoSub)]
+        [(error (string-append "LINE " (number->string n) ": ILLEGAL RETURN"))]))
