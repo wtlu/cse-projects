@@ -20,6 +20,9 @@
 ; the statement to go to after gosub call, if called, initally empty
 (define refCodeAfterGoSub null)
 
+; list of declared for loops variables, front of the list beings the most recently used value
+(define forLoopVars null)
+
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
 (define (run-program lst)
@@ -39,8 +42,8 @@
                  [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
                  [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
-                 [(symbol=? 'FOR (caadr firstLine)) (display "FOR statement")(run-program rest)]
-                 [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement")(run-program rest)]))]))
+                 [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))(run-program rest)]
+                 [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement") (process-next (cdadr firstLine) (car firstLine)) (run-program rest)]))]))
 
 ; Pre: statement is a end statement
 ; Post: process the end statement
@@ -161,3 +164,43 @@
   (cond [(not inSubroutine) (error (string-append "LINE " (number->string n) ": NOT IN SUBROUTINE"))]
         [(null? lst) (set! inSubroutine #f)(run-program refCodeAfterGoSub)]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL RETURN"))]))
+
+; Pre: statement is a for statement with correct line number
+; Post: process the for statement. If For is not followed by a legal variable name or
+; if the variable is not followed by =, throw ILLEGAL FOR. If the first expression is
+; not followed by TO, throw MISSING TO. If there's extra text after second expression
+; throw EXTRANEOUS TEXT AFTER ENDING EXPRESSION
+; If END command is reached without completing all loops, throw MISSING NEXT
+(define (process-for lst rest n)
+  (display "FOR work in progress")(newline)
+  (cond [(and (not (null? lst)) (variable? (car lst)) (not (null? (cdr lst))) (symbol? (cadr lst))
+              (symbol=? '= (cadr lst)))
+         (let* ((forVariable (car lst))
+                (lineToProcess (try-parse-expression (subsitude-expression (cddr lst) n) n))
+                (exp1 (car lineToProcess))
+                (preExp2 (if (and (not (null? (cdr lineToProcess))) (symbol? (cadr lineToProcess)) 
+                               (symbol=? 'TO (cadr lineToProcess))) 
+                          (try-parse-expression (cddr lineToProcess) n) 
+                          (error (string-append "LINE " (number->string n) ": MISSING TO"))))
+                (exp2 (if (null? (cdr preExp2))
+                              (car preExp2)
+                              (error (string-append "LINE " (number->string n) 
+                                                    ": EXTRANEOUS TEXT AFTER ENDING EXPRESSION"))))) 
+           (display "do for loop") (newline) 
+           (display exp1) (newline)
+           (display exp2) (newline)
+           (display lineToProcess) (newline)
+           (cond [(display "do stuff now that we're actually in for loop")]
+                 )
+           )]
+        [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))])
+  )
+
+; Pre: statement is a next statement with correct line number
+; Post: process the next statement. If the variable mentioned in the next command does not match
+; the variable from the most recently encounted for command, throw VARIABLE IN NEXT DOESN'T MATCH
+; If program uses same variable in oth an inner and outer loop, throw ILLEGAL NESTED LOOP
+; If a next command is not followed by a legal variable name and nothing else, throw ILLEGAL NEXT
+; If a next command does not have a corresponding FOR, throw NEXT WITHOUT FOR
+(define (process-next lst n)
+  (display "NEXT work in progress"))
