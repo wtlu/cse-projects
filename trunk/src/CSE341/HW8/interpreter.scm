@@ -21,7 +21,7 @@
 (define refCodeAfterGoSub null)
 
 ; list of declared for loops variables, front of the list beings the most recently used value
-(define forLoopVars null)
+(define forLoopVars '(X))
 
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
@@ -191,8 +191,7 @@
            (display exp2) (newline)
            (display lineToProcess) (newline)
            (cond [(display "do stuff now that we're actually in for loop")]
-                 )
-           )]
+                 ))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))])
   )
 
@@ -203,4 +202,17 @@
 ; If a next command is not followed by a legal variable name and nothing else, throw ILLEGAL NEXT
 ; If a next command does not have a corresponding FOR, throw NEXT WITHOUT FOR
 (define (process-next lst n)
-  (display "NEXT work in progress"))
+  (display "NEXT work in progress")
+  (cond [(and (not (null? lst)) (variable? (car lst)))
+         (let ((currentVar (car lst)))
+           (cond [(null? forLoopVars) 
+                  (error (string-append "LINE " (number->string n) ": NEXT WITHOUT FOR"))]
+                 [(not (symbol=? (car forLoopVars) currentVar)) 
+                  (error (string-append "LINE " (number->string n) 
+                                        ": VARIABLE IN NEXT DOESN'T MATCH"))]
+                 [(let ((lookup (assoc currentVar symbolTable)))
+                    (if lookup 
+                        (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable))
+                        (error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))))])) 
+         (display symbolTable)]
+        [(error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))]))
