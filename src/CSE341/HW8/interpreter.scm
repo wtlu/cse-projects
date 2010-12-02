@@ -190,7 +190,13 @@
            (display exp1) (newline)
            (display exp2) (newline)
            (display lineToProcess) (newline)
-           (cond [(display "do stuff now that we're actually in for loop")]
+           (cond [(display "do stuff now that we're actually in for loop")] 
+                 ;Needs to check whether the current variable has been declared
+                 ; If so, then check whether this is a inner for loop
+                 ; if it's not a inner for loop, just keep going with code
+                 ; test whehter exp1 is less than exp2, if so, then run the program in the next line
+                 ; if exp1 > exp2, decrement exp1 by 1, jump to line after the next keyword
+                 ; if for loop is a inner for loop, needs to check for illegal variables
                  ))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))])
   )
@@ -212,7 +218,7 @@
                                         ": VARIABLE IN NEXT DOESN'T MATCH"))]
                  [(let ((lookup (assoc currentVar symbolTable)))
                     (if lookup 
-                        (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable))
+                        (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable)) ;Also needs to run-program on the line where it finds the for loop again
                         (error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))))])) 
          (display symbolTable)]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))]))
