@@ -201,7 +201,7 @@
                          (process-let (list forVariable '= exp1) n)]
                         [(begin (display "forloop not entered skip to next\n")
                                 (process-let (list forVariable '= (- exp1 1)) n)
-                                (findNextLine rest forVariable n))])
+                                (run-program (process-goto (list (findNextLine rest forVariable n)) n)))])
                   (display forLoopVars) (newline)]
                  [(symbol=? (caar forLoopVars) forVariable) 
                   (display "now continuing the for loop")
@@ -212,7 +212,7 @@
                                            "LINE "(number->string n) ": ILLEGAL NESTED LOOP")))))
                     (cond [(<= lookupValue exp2) (display "now continue loop") (newline)]
                           [(begin (display "finished forloop skip to next\n")
-                                  (findNextLine rest forVariable n))]))]))]
+                                  (run-program (process-goto (list (findNextLine rest forVariable n)) n)))]))]))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
                  ;Needs to check whether the current variable has been declared
                  ; If so, then check whether this is a inner for loop
@@ -227,7 +227,7 @@
   ;(display "finding the next line number")
   (cond [(symbol=? 'END (caadar lst)) (error (string-append "LINE " (number->string n) ": MISSING NEXT"))]
         [(symbol=? 'NEXT (caadar lst)) 
-         (cond [(symbol=? (car (cdadar lst)) forVar) (display "foudn next variable") (caadr lst)]
+         (cond [(symbol=? (car (cdadar lst)) forVar) (caadr lst)]
                [(findNextLine (cdr lst) forVar n)])]
         [(findNextLine (cdr lst) forVar n)]))
 
