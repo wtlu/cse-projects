@@ -22,7 +22,7 @@
 
 ; list of declared for loops variables, followed by its line number 
 ; front of the list beings the most recently used value
-(define forLoopVars (list (list 'X 10)))
+(define forLoopVars null)
 
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
@@ -43,7 +43,7 @@
                  [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
                  [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
                  [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
-                 [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))(run-program rest)]
+                 [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))]
                  [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement") (process-next (cdadr firstLine) (car firstLine)) (run-program rest)]))]))
 
 ; Pre: statement is a end statement
@@ -196,27 +196,40 @@
                  [(or (null? forLoopVars) 
                       (not (symbol=? (caar forLoopVars) forVariable)))
                   (display "haven't been at forloop") (newline)
-                  (cond [(< exp1 exp2) (display "now entering forloop")  
+                  (cond [(<= exp1 exp2) (display "now entering forloop")  
                          (set! forLoopVars (cons (list forVariable n) forLoopVars))
                          (process-let (list forVariable '= exp1) n)]
-                        [(display "forloop not entered skip to next\n")])
+                        [(begin (display "forloop not entered skip to next\n")
+                                (process-let (list forVariable '= (- exp1 1)) n)
+                                (findNextLine rest forVariable n))])
                   (display forLoopVars) (newline)]
                  [(symbol=? (caar forLoopVars) forVariable) 
                   (display "now continuing the for loop")
-                  (let ((lookup (assoc first symbolTable))
+                  (let* ((lookup (assoc forVariable symbolTable))
                         (lookupValue (if lookup (cdr lookup)
                                          (error 
                                           (string-append 
                                            "LINE "(number->string n) ": ILLEGAL NESTED LOOP")))))
-                    (cond [(< lookup exp2) (display "now continue loop") (newline)]
-                          [(display "finished forloop skip to next\n")]))]))]
-                 [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
+                    (cond [(<= lookupValue exp2) (display "now continue loop") (newline)]
+                          [(begin (display "finished forloop skip to next\n")
+                                  (findNextLine rest forVariable n))]))]))]
+        [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
                  ;Needs to check whether the current variable has been declared
                  ; If so, then check whether this is a inner for loop
                  ; if it's not a inner for loop, just keep going with code
                  ; test whehter exp1 is less than exp2, if so, then run the program in the next line
                  ; if exp1 > exp2, decrement exp1 by 1, jump to line after the next keyword
                  ; if for loop is a inner for loop, needs to check for illegal variables
+
+; Pre: program lst has correct program flow
+; Post: Finds the line number after the next command
+(define (findNextLine lst forVar n)
+  ;(display "finding the next line number")
+  (cond [(symbol=? 'END (caadar lst)) (error (string-append "LINE " (number->string n) ": MISSING NEXT"))]
+        [(symbol=? 'NEXT (caadar lst)) 
+         (cond [(symbol=? (car (cdadar lst)) forVar) (display "foudn next variable") (caadr lst)]
+               [(findNextLine (cdr lst) forVar n)])]
+        [(findNextLine (cdr lst) forVar n)]))
 
 ; Pre: correct variable and line number passed, forLoopVars properly declared 
 ; Post: check whether the variable is used twice in the list of forLoopsVars
