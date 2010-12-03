@@ -44,7 +44,8 @@
                  [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
                  [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
                  [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))]
-                 [(symbol=? 'NEXT (caadr firstLine)) (process-next (cdadr firstLine) (car firstLine))]))]))
+                 [(symbol=? 'NEXT (caadr firstLine)) (process-next (cdadr firstLine) (car firstLine))]
+                 [(error (string-append "LINE " (number->string (car firstLine)) ": ILLEGAL COMMAND"))]))]))
 
 ; Pre: statement is a end statement
 ; Post: process the end statement
@@ -58,16 +59,26 @@
              (set! refCodeAfterGoSub null))))
 
 ; Pre: statement is a let statement with correct line number
-; Post: process the let statement
+; Post: process the let statement. If let is not followed by legal variable name and equals
+; sign, throw ILLEGAL LET. If expression is followed by extraneous text, throw 
+; EXTRANEOUS TEXT AFTER LET EXPRESSION
+; If epxression itself is illegal by rules of BASIC syntax, throw ILLEGAL EXPRESSION
+; If expression refers to variable that has not been defined, throw ILLEGAL EXPRESSION
 (define (process-let lst n)
-  (let* ((varName(car lst))
-         (equalsSign(cadr lst))
-         (restLine(cddr lst)))
-  (cond [(and (variable? varName) (symbol=? '= equalsSign))
-         (let* ((resultLst(subsitude-expression restLine n))
-                (resultLst2(try-parse-expression resultLst n)))
-            (set! symbolTable (cons (cons varName (car(try-parse-expression (subsitude-expression restLine n) n))) symbolTable)))]
-        [(display "ILLEGAL LET")])))
+  (if (and (not (null? lst)) (not (null? (cdr lst)))) 
+      (let* ((varName(car lst))
+             (equalsSign(cadr lst))
+             (restLine(cddr lst)))
+        (cond [(and (variable? varName) (symbol? equalsSign) (symbol=? '= equalsSign))
+               (let* ((resultLst(subsitude-expression restLine n))
+                      (resultLst2(try-parse-expression resultLst n))
+                      (realResult(if (null? (cdr resultLst2)) (car resultLst2) 
+                                     (error 
+                                      (string-append "LINE " (number->string n) 
+                                                     ": EXTRANEOUS TEXT AFTER LET EXPRESSION")))))
+                 (set! symbolTable (cons (cons varName realResult) symbolTable)))]
+              [(error (string-append "LINE " (number->string n) ": ILLEGAL LET"))]))
+      (error (string-append "LINE " (number->string n) ": ILLEGAL LET"))))
 
 ; Pre: statement is a valid expression
 ; Post: process the list and replace any variables found with the one from symbolTable
@@ -77,12 +88,13 @@
                (rest (cdr lst)))
            (cond [(variable? first) (let ((lookup (assoc first symbolTable)))
                                       (if lookup (cons (cdr lookup) (subsitude-expression rest n))
-                                          (error "LINE" n': "DEBUG ILLEGAL EXPRESSION")))]
+                                          (error (string-append "LINE " (number->string n) ": ILLEGAL EXPRESSION"))))]
                  [else (cons first (subsitude-expression rest n))]))])
   )
 
 ; Pre: statement is a print statement with correct line number
-; Post: process the print statement
+; Post: process the print statement. If a legal expression is followed by something other than comma
+; then throw ILLEGAL PRINT. If expression is missing or otherwise invalid, throw ILLEGAL EXPRESSION
 (define (process-print lst n)
   ;(display "to print:")
   ;(display lst)
@@ -90,10 +102,25 @@
         [(let ((first (car lst))
                (rest (cdr lst)))
            (cond [(and (symbol? (car lst)) (symbol=? 'comma (car lst))) (display " ")
-                  (if (not (null? rest)) (process-print rest n))]
-                 [(string? (car lst)) (display (car lst)) (process-print rest n)]
-                 [else (let ((newResult (try-parse-expression (subsitude-expression lst n) n))) 
-                         (display(car newResult)) (process-print (cdr newResult) n))]))]))
+                  (if (not (null? rest)) 
+                      (if (and (symbol? (car lst)) (symbol=? 'comma (car lst)))
+                          (error (string-append "LINE " (number->string n) ": ILLEGAL EXPRESSION"))
+                          (process-print rest n)))]
+                 [(string? (car lst)) (display (car lst)) 
+                                      (if (and (not (null? rest)) 
+                                               (symbol? (car rest)) 
+                                               (not (symbol=? 'comma (car rest))))
+                                          (error (string-append "LINE " (number->string n) 
+                                                                ": ILLEGAL PRINT"))
+                                          (process-print rest n))]
+                 [else (let* ((newResult (try-parse-expression (subsitude-expression lst n) n))
+                              (toDisplay (if (or (null? (cdr newResult)) 
+                                                 (and (symbol? (cadr newResult)) 
+                                                      (not (symbol=? 'comma (cadr newResult)))))
+                                             (car newResult)
+                                             (error (string-append "LINE " (number->string n) 
+                                                                   ": ILLEGAL PRINT"))))) 
+                         (display toDisplay) (process-print (cdr newResult) n))]))]))
 
 ; Pre: statement is a input statement with correct line number
 ; Post: process the input statement
