@@ -27,7 +27,7 @@
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
 (define (run-program lst)
-  (set! refWholeCode lst)
+  (if (null? refWholeCode) (set! refWholeCode lst)) 
   (cond [(null? lst) ()]
         [(null? (car lst)) ()]
         [(let* ((firstLine (car lst))
@@ -44,13 +44,18 @@
                  [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
                  [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
                  [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))]
-                 [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement") (process-next (cdadr firstLine) (car firstLine)) (run-program rest)]))]))
+                 [(symbol=? 'NEXT (caadr firstLine)) (display "NEXT statement") (process-next (cdadr firstLine) (car firstLine))]))]))
 
 ; Pre: statement is a end statement
 ; Post: process the end statement
 (define (process-end n)
   (if inSubroutine (error (string-append "LINE " (number->string n) ": MISSING RETURN"))
-      (display "PROGRAM TERMINATED")))
+      (begin (display "PROGRAM TERMINATED")
+             (set! symbolTable null) ; setting every global variable to null again
+             (set! refWholeCode null)
+             (set! forLoopVars null)
+             (set! inSubroutine #f)
+             (set! refCodeAfterGoSub null))))
 
 ; Pre: statement is a let statement with correct line number
 ; Post: process the let statement
@@ -198,7 +203,8 @@
                   (display "haven't been at forloop") (newline)
                   (cond [(<= exp1 exp2) (display "now entering forloop")  
                          (set! forLoopVars (cons (list forVariable n) forLoopVars))
-                         (process-let (list forVariable '= exp1) n)]
+                         (process-let (list forVariable '= exp1) n)
+                         (run-program rest)]
                         [(begin (display "forloop not entered skip to next\n")
                                 (process-let (list forVariable '= (- exp1 1)) n)
                                 (run-program (process-goto (list (findNextLine rest forVariable n)) n)))])
@@ -210,8 +216,11 @@
                                          (error 
                                           (string-append 
                                            "LINE "(number->string n) ": ILLEGAL NESTED LOOP")))))
-                    (cond [(<= lookupValue exp2) (display "now continue loop") (newline)]
+                    (cond [(<= lookupValue exp2) (display "now continue loop") (newline)
+                                                 (run-program rest)]
                           [(begin (display "finished forloop skip to next\n")
+                                  (process-let (list forVariable '= (- lookupValue 1)) n)
+                                  (set! forLoopVars (cdr forLoopVars)) ;get rid of the variable most used in for loop
                                   (run-program (process-goto (list (findNextLine rest forVariable n)) n)))]))]))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
                  ;Needs to check whether the current variable has been declared
@@ -251,12 +260,13 @@
          (let ((currentVar (car lst)))
            (cond [(null? forLoopVars) 
                   (error (string-append "LINE " (number->string n) ": NEXT WITHOUT FOR"))]
-                 [(not (symbol=? (car forLoopVars) currentVar)) 
+                 [(not (symbol=? (caar forLoopVars) currentVar)) 
                   (error (string-append "LINE " (number->string n) 
                                         ": VARIABLE IN NEXT DOESN'T MATCH"))]
                  [(let ((lookup (assoc currentVar symbolTable)))
                     (if lookup 
-                        (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable)) ;Also needs to run-program on the line where it finds the for loop again
+                        (begin (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable))
+                               (run-program (process-goto (list (cadar forLoopVars)) n)));Also needs to run-program on the line where it finds the for loop again
                         (error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))))])) 
          (display symbolTable)]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))]))
