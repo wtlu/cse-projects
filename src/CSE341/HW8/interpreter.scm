@@ -20,8 +20,9 @@
 ; the statement to go to after gosub call, if called, initally empty
 (define refCodeAfterGoSub null)
 
-; list of declared for loops variables, front of the list beings the most recently used value
-(define forLoopVars '(X))
+; list of declared for loops variables, followed by its line number 
+; front of the list beings the most recently used value
+(define forLoopVars (list (list 'X 10)))
 
 ; Pre:
 ; Post: runs the given BASIC code that is passed in as a lst
@@ -190,16 +191,40 @@
            (display exp1) (newline)
            (display exp2) (newline)
            (display lineToProcess) (newline)
-           (cond [(display "do stuff now that we're actually in for loop")] 
+           (cond [(invalidForVars? forVariable n) 
+                  (error (string-append "LINE " (number->string n) ": ILLEGAL NESTED LOOP"))] 
+                 [(or (null? forLoopVars) 
+                      (not (symbol=? (caar forLoopVars) forVariable)))
+                  (display "haven't been at forloop") (newline)
+                  (cond [(< exp1 exp2) (display "now entering forloop")  
+                         (set! forLoopVars (cons (list forVariable n) forLoopVars))
+                         (process-let (list forVariable '= exp1) n)]
+                        [(display "forloop not entered skip to next\n")])
+                  (display forLoopVars) (newline)]
+                 [(symbol=? (caar forLoopVars) forVariable) 
+                  (display "now continuing the for loop")
+                  (let ((lookup (assoc first symbolTable))
+                        (lookupValue (if lookup (cdr lookup)
+                                         (error 
+                                          (string-append 
+                                           "LINE "(number->string n) ": ILLEGAL NESTED LOOP")))))
+                    (cond [(< lookup exp2) (display "now continue loop") (newline)]
+                          [(display "finished forloop skip to next\n")]))]))]
+                 [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
                  ;Needs to check whether the current variable has been declared
                  ; If so, then check whether this is a inner for loop
                  ; if it's not a inner for loop, just keep going with code
                  ; test whehter exp1 is less than exp2, if so, then run the program in the next line
                  ; if exp1 > exp2, decrement exp1 by 1, jump to line after the next keyword
                  ; if for loop is a inner for loop, needs to check for illegal variables
-                 ))]
-        [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))])
-  )
+
+; Pre: correct variable and line number passed, forLoopVars properly declared 
+; Post: check whether the variable is used twice in the list of forLoopsVars
+; returns true if variable is invalid, false otherwise
+(define (invalidForVars? var n)
+  (foldl (lambda (a b) (or a b)) #f 
+         (map (lambda (y) (and (symbol=? var (car y)) (not (= n (cadr y))))) forLoopVars)))
+  
 
 ; Pre: statement is a next statement with correct line number
 ; Post: process the next statement. If the variable mentioned in the next command does not match
