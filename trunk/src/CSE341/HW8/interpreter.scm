@@ -24,8 +24,9 @@
 ; front of the list beings the most recently used value
 (define forLoopVars null)
 
-; Pre:
+; Pre: given lst is valid and in right format
 ; Post: runs the given BASIC code that is passed in as a lst
+; if command is invalid, throw ILLEGAL COMMAND
 (define (run-program lst)
   (if (null? refWholeCode) (set! refWholeCode lst)) 
   (cond [(null? lst) ()]
@@ -36,27 +37,41 @@
                  [(symbol=? 'REM (caadr firstLine)) (run-program rest)]
                  [(symbol=? 'LET (caadr firstLine)) 
                   (begin (process-let (cdadr firstLine) (car firstLine))(run-program rest))]
-                 [(symbol=? 'INPUT (caadr firstLine)) (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
+                 [(symbol=? 'INPUT (caadr firstLine)) 
+                  (process-input (cdadr firstLine) (car firstLine)) (run-program rest)]
                  [(symbol=? 'PRINT (caadr firstLine)) 
                   (begin (process-print (cdadr firstLine) (car firstLine)) (run-program rest))]
-                 [(symbol=? 'GOTO (caadr firstLine)) (run-program (process-goto (cdadr firstLine) (car firstLine)))]
-                 [(symbol=? 'IF (caadr firstLine)) (process-if (cdadr firstLine) rest (car firstLine))] ;(run-program rest)]
-                 [(symbol=? 'GOSUB (caadr firstLine)) (process-gosub (cdadr firstLine) rest (car firstLine))]
-                 [(symbol=? 'RETURN (caadr firstLine)) (process-return (cdadr firstLine) (car firstLine))]
-                 [(symbol=? 'FOR (caadr firstLine)) (process-for (cdadr firstLine) rest (car firstLine))]
-                 [(symbol=? 'NEXT (caadr firstLine)) (process-next (cdadr firstLine) (car firstLine))]
-                 [(error (string-append "LINE " (number->string (car firstLine)) ": ILLEGAL COMMAND"))]))]))
+                 [(symbol=? 'GOTO (caadr firstLine)) 
+                  (run-program (process-goto (cdadr firstLine) (car firstLine)))]
+                 [(symbol=? 'IF (caadr firstLine)) 
+                  (process-if (cdadr firstLine) rest (car firstLine))]
+                 [(symbol=? 'GOSUB (caadr firstLine))
+                  (process-gosub (cdadr firstLine) rest (car firstLine))]
+                 [(symbol=? 'RETURN (caadr firstLine)) 
+                  (process-return (cdadr firstLine) (car firstLine))]
+                 [(symbol=? 'FOR (caadr firstLine))
+                  (process-for (cdadr firstLine) rest (car firstLine))]
+                 [(symbol=? 'NEXT (caadr firstLine))
+                  (process-next (cdadr firstLine) (car firstLine))]
+                 [(error (string-append "LINE " (number->string (car firstLine)) 
+                                        ": ILLEGAL COMMAND"))]))]))
 
 ; Pre: statement is a end statement
-; Post: process the end statement
+; Post: process the end statement. Resets all globals to null/false
+; Throws MISSING RETURN if encountered in still in subroutine
+; Throws MISSING NEXT if encountered while still in for loop
 (define (process-end n)
-  (if inSubroutine (error (string-append "LINE " (number->string n) ": MISSING RETURN"))
-      (begin (display "PROGRAM TERMINATED")
+  (cond [inSubroutine (error (string-append "LINE " (number->string n) ": MISSING RETURN"))]
+        [(not(null? forLoopVars)) 
+         (error (string-append "LINE " (number->string n) ": MISSING NEXT"))]
+        [ (begin (display "PROGRAM TERMINATED")
              (set! symbolTable null) ; setting every global variable to null again
              (set! refWholeCode null)
              (set! forLoopVars null)
              (set! inSubroutine #f)
-             (set! refCodeAfterGoSub null))))
+             (set! refCodeAfterGoSub null))]))
+  
+     
 
 ; Pre: statement is a let statement with correct line number
 ; Post: process the let statement. If let is not followed by legal variable name and equals
@@ -88,7 +103,8 @@
                (rest (cdr lst)))
            (cond [(variable? first) (let ((lookup (assoc first symbolTable)))
                                       (if lookup (cons (cdr lookup) (subsitude-expression rest n))
-                                          (error (string-append "LINE " (number->string n) ": ILLEGAL EXPRESSION"))))]
+                                          (error (string-append "LINE " (number->string n) 
+                                                                ": ILLEGAL EXPRESSION"))))]
                  [else (cons first (subsitude-expression rest n))]))])
   )
 
@@ -103,7 +119,7 @@
                (rest (cdr lst)))
            (cond [(and (symbol? (car lst)) (symbol=? 'comma (car lst))) (display " ")
                   (if (not (null? rest)) 
-                      (if (and (symbol? (car lst)) (symbol=? 'comma (car lst)))
+                      (if (and (symbol? (car rest)) (symbol=? 'comma (car rest)))
                           (error (string-append "LINE " (number->string n) ": ILLEGAL EXPRESSION"))
                           (process-print rest n)))]
                  [(string? (car lst)) (display (car lst)) 
@@ -115,8 +131,9 @@
                                           (process-print rest n))]
                  [else (let* ((newResult (try-parse-expression (subsitude-expression lst n) n))
                               (toDisplay (if (or (null? (cdr newResult)) 
-                                                 (and (symbol? (cadr newResult)) 
-                                                      (not (symbol=? 'comma (cadr newResult)))))
+                                                 (and (not (null? (cdr newResult))) 
+                                                      (symbol? (cadr newResult)) 
+                                                      (symbol=? 'comma (cadr newResult))))
                                              (car newResult)
                                              (error (string-append "LINE " (number->string n) 
                                                                    ": ILLEGAL PRINT"))))) 
@@ -135,7 +152,8 @@
                   ;(display "now processing and getting input")
                   (let ((inputVal (read)))
                     (if (number? inputVal) (process-let (list varName '= inputVal) n) 
-                        (error (string-append "LINE " (number->string n) ": INPUT MUST BE A NUMBER"))))]))]
+                        (error (string-append "LINE " (number->string n) 
+                                              ": INPUT MUST BE A NUMBER"))))]))]
                  [(error (string-append "LINE " (number->string n) ": ILLEGAL INPUT COMMAND"))]))
 
 ; Pre: statement is a goto statement with correct line number
@@ -194,7 +212,8 @@
 ; Post process the return statement.
 (define (process-return lst n)
   ;(display "return statement") (newline)
-  (cond [(not inSubroutine) (error (string-append "LINE " (number->string n) ": NOT IN SUBROUTINE"))]
+  (cond [(not inSubroutine) (error (string-append "LINE " (number->string n) 
+                                                  ": NOT IN SUBROUTINE"))]
         [(null? lst) (set! inSubroutine #f)(run-program refCodeAfterGoSub)]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL RETURN"))]))
 
@@ -205,6 +224,24 @@
 ; throw EXTRANEOUS TEXT AFTER ENDING EXPRESSION
 ; If END command is reached without completing all loops, throw MISSING NEXT
 (define (process-for lst rest n)
+  ; Pre: program lst has correct program flow
+  ; Post: Finds the line number after the next command
+  (define (findNextLine lst forVar n)
+    ;(display "finding the next line number")
+    (cond [(symbol=? 'END (caadar lst)) (error (string-append 
+                                                "LINE " (number->string n) ": MISSING NEXT"))]
+          [(symbol=? 'NEXT (caadar lst)) 
+           (cond [(symbol=? (car (cdadar lst)) forVar) (caadr lst)]
+                 [(findNextLine (cdr lst) forVar n)])]
+          [(findNextLine (cdr lst) forVar n)]))
+  
+  ; Pre: correct variable and line number passed, forLoopVars properly declared 
+  ; Post: check whether the variable is used twice in the list of forLoopsVars
+  ; returns true if variable is invalid, false otherwise
+  (define (invalidForVars? var n)
+    (foldl (lambda (a b) (or a b)) #f 
+           (map (lambda (y) (and (symbol=? var (car y)) (not (= n (cadr y))))) forLoopVars)))
+  
   (cond [(and (not (null? lst)) (variable? (car lst)) (not (null? (cdr lst))) (symbol? (cadr lst))
               (symbol=? '= (cadr lst)))
          (let* ((forVariable (car lst))
@@ -227,7 +264,8 @@
                          (process-let (list forVariable '= exp1) n)
                          (run-program rest)]
                         [(begin (process-let (list forVariable '= (- exp1 1)) n)
-                                (run-program (process-goto (list (findNextLine rest forVariable n)) n)))])]
+                                (run-program (process-goto 
+                                              (list (findNextLine rest forVariable n)) n)))])]
                  [(symbol=? (caar forLoopVars) forVariable) 
                   (let* ((lookup (assoc forVariable symbolTable))
                         (lookupValue (if lookup (cdr lookup)
@@ -236,32 +274,12 @@
                                            "LINE "(number->string n) ": ILLEGAL NESTED LOOP")))))
                     (cond [(<= lookupValue exp2) (run-program rest)]
                           [(begin (process-let (list forVariable '= (- lookupValue 1)) n)
-                                  (set! forLoopVars (cdr forLoopVars)) ;get rid of the variable most used in for loop
-                                  (run-program (process-goto (list (findNextLine rest forVariable n)) n)))]))]))]
+                                  (set! forLoopVars (cdr forLoopVars)) 
+                                  (run-program (process-goto 
+                                                (list (findNextLine rest forVariable n)) n)))]))]))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL FOR"))]))
-                 ;Needs to check whether the current variable has been declared
-                 ; If so, then check whether this is a inner for loop
-                 ; if it's not a inner for loop, just keep going with code
-                 ; test whehter exp1 is less than exp2, if so, then run the program in the next line
-                 ; if exp1 > exp2, decrement exp1 by 1, jump to line after the next keyword
-                 ; if for loop is a inner for loop, needs to check for illegal variables
 
-; Pre: program lst has correct program flow
-; Post: Finds the line number after the next command
-(define (findNextLine lst forVar n)
-  ;(display "finding the next line number")
-  (cond [(symbol=? 'END (caadar lst)) (error (string-append "LINE " (number->string n) ": MISSING NEXT"))]
-        [(symbol=? 'NEXT (caadar lst)) 
-         (cond [(symbol=? (car (cdadar lst)) forVar) (caadr lst)]
-               [(findNextLine (cdr lst) forVar n)])]
-        [(findNextLine (cdr lst) forVar n)]))
 
-; Pre: correct variable and line number passed, forLoopVars properly declared 
-; Post: check whether the variable is used twice in the list of forLoopsVars
-; returns true if variable is invalid, false otherwise
-(define (invalidForVars? var n)
-  (foldl (lambda (a b) (or a b)) #f 
-         (map (lambda (y) (and (symbol=? var (car y)) (not (= n (cadr y))))) forLoopVars)))
   
 
 ; Pre: statement is a next statement with correct line number
@@ -281,6 +299,6 @@
                  [(let ((lookup (assoc currentVar symbolTable)))
                     (if lookup 
                         (begin (set! symbolTable (cons (cons currentVar (+ (cdr lookup) 1)) symbolTable))
-                               (run-program (process-goto (list (cadar forLoopVars)) n)));Also needs to run-program on the line where it finds the for loop again
+                               (run-program (process-goto (list (cadar forLoopVars)) n)))
                         (error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))))]))]
         [(error (string-append "LINE " (number->string n) ": ILLEGAL NEXT"))]))
