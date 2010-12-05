@@ -82,10 +82,39 @@ function box(boxObject) {
 	print(buildBorderRow(boxObject.width, boxObject.border));
 }
 
-// Pre: string is valid
+// Taken from lecture 25 to implement curry
+function toArray(a, i) {          // converts a
+    var result = [], i = i || 0;  // duck-typed obj
+    while (i < a.length) {        // into an array
+        result.push(a[i++]);
+    }
+    return result;
+};
+// Taken from lecture 25 to implement curry function
+function curry(f) {       // Usage: curry(f, arg1, ...)
+    var args = toArray(arguments, 1);  // remove f
+    return function() {
+        return f.apply(this,
+            args.concat(toArray(arguments)));
+    };
+}
+
+
+// Pre: string s is valid
 // Post: returns a new string with same characters as original, but
 // with the text converted to "Pig Latin"
-function pigLatin() {
-	//Todo
-    print("work in progress");
+function pigLatin(s) {
+	
+	// Checks if the given string does not starts with a vowel
+	// returns true if str does not start with vowel, false otherwise
+	function notStartWithVowel(str) {
+		return !((str[0]) === "a" || (str[0] === "e") || (str[0] === "i") ||
+			(str[0] === "o") || (str[0] === "u"))
+	}
+	var result = s.split(" ").filter(notStartWithVowel).map(function(x) 
+		{ return x.slice(1) + "-" + x[0] + "ay"}).join(" ");
+	
+    return result;
 }
+
+var s = "Seattle Mariners are a great team eh?";
