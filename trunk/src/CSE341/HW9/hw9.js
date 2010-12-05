@@ -35,16 +35,51 @@ function isPrime(n) {
 }
 
 // Pre: object that stores various attributes of box as its properties
-// is valid. 
+// is valid. In particular, if defined, boxObject's width and height property
+// should be intergers >= 2. Border and filling should be strings of one character
 // Post: draws a text fiture of a rectangular box based on the passed in object with
 // following properties. If property is absent, use default values shown
 // width: number of characters wide for the box (default 10)
 // height: number of characters wide for the box (default 5)
 // border: character to use to draw around the outside of the box (default "*")
 // filling: character to use to draw in the interior of the box (default ".")
-function box() {
-	//Todo
-    print("work in progress");
+function box(boxObject) {
+	if (typeof(boxObject) === "undefined")
+		boxObject = {};
+	if (typeof(boxObject["width"]) === "undefined")
+		boxObject["width"] = 10;
+	if (typeof(boxObject["height"]) === "undefined")
+		boxObject["height"] = 5;
+	if (typeof(boxObject["border"]) === "undefined")
+		boxObject["border"] = "*";
+	if (typeof(boxObject["filling"]) === "undefined")
+		boxObject["filling"] = ".";		
+		
+	// Pre: n and borderChar are not undefined
+	// Builds the border row containing n characters of of borderChar
+	function buildBorderRow(n, borderChar) {
+		var result = ""
+		for (var i = 0; i < n; i++) {
+			result += borderChar;
+		}
+		return result;
+	}
+	
+	// Pre: n, borderChar, fillingChar are not undefined
+	// Builds a row of n - 2 filling wraped around 1 character of borderChar
+	function buildFillingRow(n, borderChar, fillingChar) {
+		var result = borderChar;
+		for (var i = 0; i < (n - 2); i++) {
+			result += fillingChar;
+		}
+		return (result + borderChar)
+	}
+	
+    print(buildBorderRow(boxObject.width, boxObject.border));
+	for (var i = 0; i < boxObject.height - 2; i++) {
+		print(buildFillingRow(boxObject.width, boxObject.border, boxObject.filling));
+	}
+	print(buildBorderRow(boxObject.width, boxObject.border));
 }
 
 // Pre: string is valid
