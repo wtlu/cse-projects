@@ -9,17 +9,29 @@ HW9 - This program contains several short individual functions
 
 // Pre: string is valid, n passed in is valid integer
 // Post: returns the string repeated n times. If n is <= 0, returns empty string
-// 			if n is not passed, assume an n of 1
-function repl() {
-	//Todo
-    print("work in progress");
+// if n is not passed, assume an n of 1
+function repl(str, n) {
+	if (typeof(n) === "undefined")
+		n = 1;
+	
+	if (n <= 0)
+		return ""
+	else
+		return str + repl(str, n - 1);
 }
 
-// Pre: integer is valid
+// Pre: n is valid integer
 // Post: returns true if the integer is a prime number, false otherwise
-function isPrime() {
-	//Todo
-    print("work in progress");
+function isPrime(n) {
+	if (n <= 1)
+		return false;
+		
+	var endValue = Math.sqrt(n);
+	for (var i = 2; i <= endValue; i++) {
+		if ( (n % i) === 0)
+			return false;
+	}
+	return true;
 }
 
 // Pre: object that stores various attributes of box as its properties
