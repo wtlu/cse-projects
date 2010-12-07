@@ -121,7 +121,71 @@ function pigLatin(s) {
 // Post: adds a method squared to all numbers that returns the square of the number
 Number.prototype.squared = function () { return this*this }
 
+// Pre: Array type exists
+// Post: adds a method shuffle to all arrays that rearranges the elements of the array
+// into a randomly chosen order with equal probability. 
+Array.prototype.shuffle = function () {
+	for (var i = (this.length -1); i >= 1; i--) {
+		var j = (Math.round(Math.random() * i));
+		var temp = this[i];
+		this[i] = this[j];
+		this[j] = temp;
+	}
+}
+
+// Pre: String type exists. Words in the string are separaed by exactly one space.
+// Post: adds a method toTitleCase to all strings that returns a new string where each word
+// of the original string has its first letter in upper case and the rest of ththat word's
+// letters in lowercase.
+String.prototype.toTitleCase = function() {
+	//todo
+	print("work in progress");
+}
+
+// Pre: String type exists.
+// Post: adds a method toAlternatingCase to all strings that returns a new string that 
+// contains the same characters and the original, but alternating between upper and lowercase.
+// By default, the first character should be uppercase, the seond lowercase, the third uppercase,
+// and so on. But if an optional boolean parameter of true (or any truthy value) is passed, then
+// the effect is opposite (1st character is lower, 2nd is upper, etc).
+String.prototype.toAlternatingCase = function() {
+	//todo
+	print("work in progress");
+}
+
+// Pre: String type exists.
+// Post: adds a method toLeetSpeak to all strings that contains the same characters as the
+// original, but with various subsititutions to convert the text to "Leet Speak".
+// Substitue 4 for A, 3 for E, 1 for I, 0 for O, Z for S. Also convert the string to 
+// Alternating case, starting with the first letter captitalized. 
+String.prototype.toLeetSpeak = function() {
+
+}
+
+// Pre: n is valid integer
+// Post: returns true if the integer is a prime number, false otherwise
+function isPrime2(n) {
+	if (n <= 1)
+		return false;
+		
+	var endValue = Math.sqrt(n);
+	for (var i = 2; i <= endValue; i++) {
+		if ( (n % i) === 0)
+			return false;
+	}
+	return true;
+}
+
+// Pre: minimum and maximum value are integers >= 0
+// Post: returns an array containing all prime numbers that appear in that range (inclusive)
+// If minimum is greater than the maximum, return empty array. 
+function primesInRange(min, max) {
+	//todo
+	print("work in progress");
+}
 
 // Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
+var n = 7;
+var a = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 
