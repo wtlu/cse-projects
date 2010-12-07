@@ -163,9 +163,39 @@ String.prototype.toTitleCase = function() {
 // By default, the first character should be uppercase, the seond lowercase, the third uppercase,
 // and so on. But if an optional boolean parameter of true (or any truthy value) is passed, then
 // the effect is opposite (1st character is lower, 2nd is upper, etc).
-String.prototype.toAlternatingCase = function() {
+String.prototype.toAlternatingCase = function(firstToLower) {
 	//todo
 	print("work in progress");
+	
+	// Pre: s and modNum both exists, and are strings and interger
+	// respectively. modNum is either 0 or 1.
+	// Post: process the word by turning the first letter to upper case 2nd 
+	// to lowercase, 3rd to upper, etc if modNum is 1. If modNum is two 
+	// then the result is 1st letter to lower, 2nd to upper, 3rd to lower, etc.
+	function processOneWord(s) {
+		var answer = "";
+		var modNum = 1;
+		if (firstToLower) {
+			modNum = 0;
+		}
+		
+		for (var i = 0; i < s.length; i++) {
+			if (i % 2 === modNum) {
+				answer += s[i].toLowerCase();
+			} else {
+				answer += s[i].toUpperCase();
+			}
+			
+		}
+		
+		return answer;
+	}
+	if (typeof(firstToLower) === "undefined") {
+		firstToLower = false;
+	}
+	
+	return this.split(" ").map(processOneWord).join(" ");
+	
 }
 
 // Pre: String type exists.
