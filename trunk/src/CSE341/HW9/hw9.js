@@ -195,7 +195,12 @@ String.prototype.toAlternatingCase = function(firstToLower) {
 // Substitue 4 for A, 3 for E, 1 for I, 0 for O, Z for S. Also convert the string to 
 // Alternating case, starting with the first letter captitalized. 
 String.prototype.toLeetSpeak = function() {
-
+	var replacedA = this.replace(/A/ig, "4");
+	var replacedE = replacedA.replace(/E/ig, "3");
+	var replacedI = replacedE.replace(/I/ig, "1");
+	var replacedO = replacedI.replace(/O/ig, "0");
+	var replacedS = replacedO.replace(/S/ig, "Z");
+	return replacedS.toAlternatingCase();
 }
 
 // Pre: n is valid integer
@@ -225,4 +230,5 @@ var s = "Seattle Mariners are a great team eh?";
 var n = 7;
 var a = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 var s2 = "QUICK Fox JUmPs ovEr LazY DOg";
-
+var s3 = "xx xx xx xxx xxx xxxx xxxx";
+var s4 = "aaAAeeEEiiIIooOOuuUUssSS";
