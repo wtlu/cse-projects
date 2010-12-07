@@ -117,4 +117,11 @@ function pigLatin(s) {
     return result;
 }
 
+// Pre: Number type exists
+// Post: adds a method squared to all numbers that returns the square of the number
+Number.prototype.squared = function () { return this*this }
+
+
+// Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
+
