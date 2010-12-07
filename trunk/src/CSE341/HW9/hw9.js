@@ -177,11 +177,11 @@ String.prototype.toAlternatingCase = function(firstToLower) {
 		modNum = 0;
 	}
 	
-	for (var i = 0; i < s.length; i++) {
+	for (var i = 0; i < this.length; i++) {
 		if (i % 2 === modNum) {
-			answer += s[i].toLowerCase();
+			answer += this[i].toLowerCase();
 		} else {
-			answer += s[i].toUpperCase();
+			answer += this[i].toUpperCase();
 		}
 		
 	}
