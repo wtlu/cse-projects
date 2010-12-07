@@ -135,11 +135,26 @@ Array.prototype.shuffle = function () {
 
 // Pre: String type exists. Words in the string are separaed by exactly one space.
 // Post: adds a method toTitleCase to all strings that returns a new string where each word
-// of the original string has its first letter in upper case and the rest of ththat word's
+// of the original string has its first letter in upper case and the rest of that word's
 // letters in lowercase.
 String.prototype.toTitleCase = function() {
-	//todo
-	print("work in progress");
+	
+	// Pre: passed in s is string
+	// Post: process the word by turning the first letter to upper case and 
+	// rest of the words letters in lowercase.
+	function processOneWord(s) {
+		var answer = "";
+		for (var i = 0; i < s.length; i++) {
+			if (i === 0) {
+				answer += s[i].toUpperCase();
+			} else {
+				answer += s[i].toLowerCase();
+			}
+		}
+		return answer;
+	}
+	var result = this.split(" ").map(processOneWord).join(" ");
+	return result;
 }
 
 // Pre: String type exists.
@@ -188,4 +203,5 @@ function primesInRange(min, max) {
 var s = "Seattle Mariners are a great team eh?";
 var n = 7;
 var a = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+var s2 = "QUICK Fox JUmPs ovEr LazY DOg";
 
