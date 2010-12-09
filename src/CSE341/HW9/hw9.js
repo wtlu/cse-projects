@@ -245,8 +245,8 @@ Rectangle.prototype.toString = function() {
 // within both this rectangle and the given other rectangle. If rectangles do not overlap
 // then function returns null
 Rectangle.prototype.union = function(r) {
-	//todo
-	print("work in progress");
+	return new Rectangle(Math.min(this.lt, r.lt), Math.min(this.tp, r.tp),
+						Math.max(this.rt, r.rt), Math.max(this.bm, r.bm));
 }
 
 // Pre: client will pass all expected parameters to each function and that they
