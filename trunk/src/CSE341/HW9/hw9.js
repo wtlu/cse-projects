@@ -239,6 +239,33 @@ Rectangle.prototype.toString = function() {
 	this.rt + ",top=" + this.tp + ",bottom=" + this.bm + "}";
 };
 
+// Pre: client will pass all expected parameters to each function and that they
+// will be of the appropriate type
+// Post: Returns a new rectangle representing the largest rectangular area that is contained
+// within both this rectangle and the given other rectangle. If rectangles do not overlap
+// then function returns null
+Rectangle.prototype.union = function(r) {
+	//todo
+	print("work in progress");
+}
+
+// Pre: client will pass all expected parameters to each function and that they
+// will be of the appropriate type
+// Post: Returns a true (or any truthy value) if the given point/rectangle lies
+// entirely inside of this rectangle, and false (or any falsy value) otherwise.
+Rectangle.prototype.contains = function(obj) {
+	//todo
+	print("work in progress");
+}
+// Pre: client will pass all expected parameters to each function and that they
+// will be of the appropriate type
+// Post: Returns a new rectangle of the smallest bounding box that entirely contains both
+// this rectangle and the given rectangle.
+Rectangle.prototype.intersect = function(r) {
+	//todo
+	print("work in progress");
+
+}
 // Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
 var n = 7;
