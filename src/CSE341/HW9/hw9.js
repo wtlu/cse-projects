@@ -251,21 +251,56 @@ Rectangle.prototype.union = function(r) {
 
 // Pre: client will pass all expected parameters to each function and that they
 // will be of the appropriate type
+// Post: Returns a representing the largest rectangular area that is 
+// contained within both this rectangle and the given other rectangle.
+Rectangle.prototype.intersect = function(r) {
+	//todo
+	print("work in progress");
+	if (this.lt < r.lt) {
+		if (this.tp < r.tp) {
+			if (this.rt > r.rt) {
+				if (this.bm > r.bm) {
+					return new Rectangle(r.lt, r.tp, r.rt, r.bm);
+				} else { //this.bm <= r.bm
+					return new Rectangle(r.lt, r.tp, r.rt, this.bm);
+				}
+			} else {	// this.rt <= r.rt
+				if (this.bm > r.bm) {
+					return new Rectangle(r.lt, r.tp, this.rt, r.bm);
+				} else { //this.bm <= r.bm
+					return new Rectangle(r.lt, r.tp, this.rt, this.bm);
+				}
+			}
+		} else { //this.tp >= r.tp
+			if (this.rt > r.rt) {
+				if (this.bm > r.bm) {
+					return new Rectangle(r.lt, this.tp, r.rt, r.bm);
+				} else { // this.bm <= r.bm
+					return new Rectangle(r.lt, r.tp, r.rt, this.bm);
+				}
+			} else { //this.rt <= r.rt
+				if (this.bm > r.bm) {
+					return new Rectangle(r.lt, this.tp, this.rt, r.bm);
+				} else { // this.bm <= r.bm
+					return new Rectangle(r.lt, this.tp, this.rt, this.bm);
+				}
+			}
+		}
+	} else {
+		return r.intersect(this);
+	}
+
+}
+
+// Pre: client will pass all expected parameters to each function and that they
+// will be of the appropriate type
 // Post: Returns a true (or any truthy value) if the given point/rectangle lies
 // entirely inside of this rectangle, and false (or any falsy value) otherwise.
 Rectangle.prototype.contains = function(obj) {
 	//todo
 	print("work in progress");
 }
-// Pre: client will pass all expected parameters to each function and that they
-// will be of the appropriate type
-// Post: Returns a new rectangle of the smallest bounding box that entirely contains both
-// this rectangle and the given rectangle.
-Rectangle.prototype.intersect = function(r) {
-	//todo
-	print("work in progress");
 
-}
 // Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
 var n = 7;
@@ -273,3 +308,10 @@ var a = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 var s2 = "QUICK Fox JUmPs ovEr LazY DOg";
 var s3 = "xx xx xx xxx xxx xxxx xxxx";
 var s4 = "aaAAeeEEiiIIooOOuuUUssSS";
+var r1 = new Rectangle(3, 5, 10, 19);
+var r2 = new Rectangle(4, 2, 11, 8); // interesting union/intersection w/ r1
+var r3 = new Rectangle(6, 8, 9, 11);
+var r4 = new Rectangle(20, 19, 30, 32); // far away from the others
+var r5 = new Rectangle(3, 5, 10, 19); // equal to r1
+var p1 = {x: 7, y: 8}; // a point contained within r1
+var p2 = {x: 1, y: 2}; // a point not contained within r1
