@@ -6,6 +6,8 @@ Quiz Section: AA
 HW9 - This program contains several short individual functions
 */
 
+// To use underscore library
+load("underscore.js");
 
 // Pre: string is valid, n passed in is valid integer
 // Post: returns the string repeated n times. If n is <= 0, returns empty string
@@ -205,24 +207,15 @@ String.prototype.toLeetSpeak = function() {
 
 // Pre: n is valid integer
 // Post: returns true if the integer is a prime number, false otherwise
-function isPrime2(n) {
-	if (n <= 1)
-		return false;
-		
-	var endValue = Math.sqrt(n);
-	for (var i = 2; i <= endValue; i++) {
-		if ( (n % i) === 0)
-			return false;
-	}
-	return true;
-}
+// Note this is memoized version
+var isPrime2 = _.memoize(isPrime);
+
 
 // Pre: minimum and maximum value are integers >= 0
 // Post: returns an array containing all prime numbers that appear in that range (inclusive)
 // If minimum is greater than the maximum, return empty array. 
 function primesInRange(min, max) {
-	//todo
-	print("work in progress");
+	return _.range(min, max + 1).filter(isPrime2);
 }
 
 // Testing variables, delete when done
