@@ -121,7 +121,7 @@ function pigLatin(s) {
 
 // Pre: Number type exists
 // Post: adds a method squared to all numbers that returns the square of the number
-Number.prototype.squared = function () { return this*this }
+Number.prototype.squared = function () { return this*this };
 
 // Pre: Array type exists
 // Post: adds a method shuffle to all arrays that rearranges the elements of the array
@@ -133,7 +133,7 @@ Array.prototype.shuffle = function () {
 		this[i] = this[j];
 		this[j] = temp;
 	}
-}
+};
 
 // Pre: String type exists. Words in the string are separaed by exactly one space.
 // Post: adds a method toTitleCase to all strings that returns a new string where each word
@@ -157,7 +157,7 @@ String.prototype.toTitleCase = function() {
 	}
 	var result = this.split(" ").map(processOneWord).join(" ");
 	return result;
-}
+};
 
 // Pre: String type exists.
 // Post: adds a method toAlternatingCase to all strings that returns a new string that 
@@ -189,7 +189,7 @@ String.prototype.toAlternatingCase = function(firstToLower) {
 	}
 	
 	return answer;	
-}
+};
 
 // Pre: String type exists.
 // Post: adds a method toLeetSpeak to all strings that contains the same characters as the
@@ -217,6 +217,27 @@ var isPrime2 = _.memoize(isPrime);
 function primesInRange(min, max) {
 	return _.range(min, max + 1).filter(isPrime2);
 }
+
+// Pre: Left value passed is less than or equal to the right value passed and 
+// top value passed is less than or equal to the bottom value passed.
+// Post: A constructor that accepts the four corner coordinate values and 
+// uses them to initialize a newly created rectangle object. The order of the parameters
+// is the same as if we were passing two points, (x1, y1), (x2, y2), where the first
+// represented the top/left corner of the rectangle and the second represented 
+// its bottom/right corner.
+function Rectangle(left, top, right, bottom) {
+	this.lt = left;
+	this.tp = top;
+	this.rt = right;
+	this.bm = bottom;
+}
+
+// Post: Returns a string representation of the rectangle 
+// in the format "{left=lt,right=rt,top=tp,bottom=bm}"
+Rectangle.prototype.toString = function() {
+	return "{left=" + this.lt + ",right=" + 
+	this.rt + ",top=" + this.tp + ",bottom=" + this.bm + "}";
+};
 
 // Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
