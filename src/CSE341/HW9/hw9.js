@@ -254,9 +254,10 @@ Rectangle.prototype.union = function(r) {
 // Post: Returns a representing the largest rectangular area that is 
 // contained within both this rectangle and the given other rectangle.
 Rectangle.prototype.intersect = function(r) {
-	//todo
-	print("work in progress");
 	if (this.lt < r.lt) {
+		if (this.rt < r.lt || this.bm < r.tp || this.tp > r.bm) {
+			return null;
+		}
 		if (this.tp < r.tp) {
 			if (this.rt > r.rt) {
 				if (this.bm > r.bm) {
@@ -289,8 +290,7 @@ Rectangle.prototype.intersect = function(r) {
 	} else {
 		return r.intersect(this);
 	}
-
-}
+};
 
 // Pre: client will pass all expected parameters to each function and that they
 // will be of the appropriate type
