@@ -8,30 +8,34 @@ HW9 - This program contains several short individual functions
 
 // To use underscore library
 load("underscore.js");
+var _; //to pass JSLint
 
 // Pre: string is valid, n passed in is valid integer
 // Post: returns the string repeated n times. If n is <= 0, returns empty string
 // if n is not passed, assume an n of 1
 function repl(str, n) {
-	if (typeof(n) === "undefined")
+	if (typeof(n) === "undefined") {
 		n = 1;
-	
-	if (n <= 0)
-		return ""
-	else
+	}
+	if (n <= 0) {
+		return "";
+	} else {
 		return str + repl(str, n - 1);
+	}
 }
 
 // Pre: n is valid integer
 // Post: returns true if the integer is a prime number, false otherwise
 function isPrime(n) {
-	if (n <= 1)
+	if (n <= 1) {
 		return false;
-		
+	}
+	
 	var endValue = Math.sqrt(n);
 	for (var i = 2; i <= endValue; i++) {
-		if ( (n % i) === 0)
+		if ( (n % i) === 0) {
 			return false;
+		}
 	}
 	return true;
 }
@@ -46,21 +50,26 @@ function isPrime(n) {
 // border: character to use to draw around the outside of the box (default "*")
 // filling: character to use to draw in the interior of the box (default ".")
 function box(boxObject) {
-	if (typeof(boxObject) === "undefined")
+	if (typeof(boxObject) === "undefined") {
 		boxObject = {};
-	if (typeof(boxObject["width"]) === "undefined")
-		boxObject["width"] = 10;
-	if (typeof(boxObject["height"]) === "undefined")
-		boxObject["height"] = 5;
-	if (typeof(boxObject["border"]) === "undefined")
-		boxObject["border"] = "*";
-	if (typeof(boxObject["filling"]) === "undefined")
-		boxObject["filling"] = ".";		
+	}
+	if (typeof(boxObject.width) === "undefined") {
+		boxObject.width = 10;
+	}
+	if (typeof(boxObject.height) === "undefined") {
+		boxObject.height = 5;
+	}
+	if (typeof(boxObject.border) === "undefined") {
+		boxObject.border = "*";
+	}
+	if (typeof(boxObject.filling) === "undefined") {
+		boxObject.filling = ".";		
+	}
 		
 	// Pre: n and borderChar are not undefined
 	// Builds the border row containing n characters of of borderChar
 	function buildBorderRow(n, borderChar) {
-		var result = ""
+		var result = "";
 		for (var i = 0; i < n; i++) {
 			result += borderChar;
 		}
@@ -74,7 +83,7 @@ function box(boxObject) {
 		for (var i = 0; i < (n - 2); i++) {
 			result += fillingChar;
 		}
-		return (result + borderChar)
+		return (result + borderChar);
 	}
 	
     print(buildBorderRow(boxObject.width, boxObject.border));
@@ -83,24 +92,6 @@ function box(boxObject) {
 	}
 	print(buildBorderRow(boxObject.width, boxObject.border));
 }
-
-// Taken from lecture 25 to implement curry
-function toArray(a, i) {          // converts a
-    var result = [], i = i || 0;  // duck-typed obj
-    while (i < a.length) {        // into an array
-        result.push(a[i++]);
-    }
-    return result;
-};
-// Taken from lecture 25 to implement curry function
-function curry(f) {       // Usage: curry(f, arg1, ...)
-    var args = toArray(arguments, 1);  // remove f
-    return function() {
-        return f.apply(this,
-            args.concat(toArray(arguments)));
-    };
-}
-
 
 // Pre: string s is valid
 // Post: returns a new string with same characters as original, but
@@ -111,17 +102,17 @@ function pigLatin(s) {
 	// returns true if str does not start with vowel, false otherwise
 	function notStartWithVowel(str) {
 		return !((str[0]) === "a" || (str[0] === "e") || (str[0] === "i") ||
-			(str[0] === "o") || (str[0] === "u"))
+			(str[0] === "o") || (str[0] === "u"));
 	}
 	var result = s.split(" ").filter(notStartWithVowel).map(function(x) 
-		{ return x.slice(1) + "-" + x[0] + "ay"}).join(" ");
+		{ return x.slice(1) + "-" + x[0] + "ay";}).join(" ");
 	
     return result;
 }
 
 // Pre: Number type exists
 // Post: adds a method squared to all numbers that returns the square of the number
-Number.prototype.squared = function () { return this*this };
+Number.prototype.squared = function () { return this*this; };
 
 // Pre: Array type exists
 // Post: adds a method shuffle to all arrays that rearranges the elements of the array
@@ -203,7 +194,7 @@ String.prototype.toLeetSpeak = function() {
 	var replacedO = replacedI.replace(/O/ig, "0");
 	var replacedS = replacedO.replace(/S/ig, "Z");
 	return replacedS.toAlternatingCase();
-}
+};
 
 // Pre: n is valid integer
 // Post: returns true if the integer is a prime number, false otherwise
@@ -247,7 +238,7 @@ Rectangle.prototype.toString = function() {
 Rectangle.prototype.union = function(r) {
 	return new Rectangle(Math.min(this.lt, r.lt), Math.min(this.tp, r.tp),
 						Math.max(this.rt, r.rt), Math.max(this.bm, r.bm));
-}
+};
 
 // Pre: client will pass all expected parameters to each function and that they
 // will be of the appropriate type
@@ -305,7 +296,7 @@ Rectangle.prototype.contains = function(obj) {
 		return (this.lt <= obj.lt && this.rt >= obj.rt &&
 				this.tp <= obj.tp && this.bm >= obj.bm);
 	}
-}
+};
 
 // Testing variables, delete when done
 var s = "Seattle Mariners are a great team eh?";
