@@ -297,8 +297,14 @@ Rectangle.prototype.intersect = function(r) {
 // Post: Returns a true (or any truthy value) if the given point/rectangle lies
 // entirely inside of this rectangle, and false (or any falsy value) otherwise.
 Rectangle.prototype.contains = function(obj) {
-	//todo
-	print("work in progress");
+	if (obj.x && obj.y) {
+		print("this is a point");
+		return (this.lt <= obj.x && this.rt >= obj.x && 
+				this.tp <= obj.y && this.bm >= obj.y);
+	} else {
+		return (this.lt <= obj.lt && this.rt >= obj.rt &&
+				this.tp <= obj.tp && this.bm >= obj.bm);
+	}
 }
 
 // Testing variables, delete when done
