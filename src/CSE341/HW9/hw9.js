@@ -146,8 +146,7 @@ String.prototype.toTitleCase = function() {
 		}
 		return answer;
 	}
-	var result = this.split(" ").map(processOneWord).join(" ");
-	return result;
+	return this.split(" ").map(processOneWord).join(" ");
 };
 
 // Pre: String type exists.
@@ -157,9 +156,6 @@ String.prototype.toTitleCase = function() {
 // and so on. But if an optional boolean parameter of true (or any truthy value) is passed, then
 // the effect is opposite (1st character is lower, 2nd is upper, etc).
 String.prototype.toAlternatingCase = function(firstToLower) {
-	//todo
-	print("work in progress");
-
 	if (typeof(firstToLower) === "undefined") {
 		firstToLower = false;
 	}
@@ -176,7 +172,6 @@ String.prototype.toAlternatingCase = function(firstToLower) {
 		} else {
 			answer += this[i].toUpperCase();
 		}
-		
 	}
 	
 	return answer;	
@@ -213,17 +208,17 @@ function primesInRange(min, max) {
 // represented the top/left corner of the rectangle and the second represented 
 // its bottom/right corner.
 function Rectangle(left, top, right, bottom) {
-	this.lt = left;
-	this.tp = top;
-	this.rt = right;
-	this.bm = bottom;
+	this.left = left;
+	this.top = top;
+	this.right = right;
+	this.bottom = bottom;
 }
 
 // Post: Returns a string representation of the rectangle 
-// in the format "{left=lt,right=rt,top=tp,bottom=bm}"
+// in the format "{left=left,right=right,top=top,bottom=bottom}"
 Rectangle.prototype.toString = function() {
-	return "{left=" + this.lt + ",right=" + 
-	this.rt + ",top=" + this.tp + ",bottom=" + this.bm + "}";
+	return "{left=" + this.left + ",right=" + 
+	this.right + ",top=" + this.top + ",bottom=" + this.bottom + "}";
 };
 
 // Pre: client will pass all expected parameters to each function and that they
@@ -232,8 +227,8 @@ Rectangle.prototype.toString = function() {
 // within both this rectangle and the given other rectangle. If rectangles do not overlap
 // then function returns null
 Rectangle.prototype.union = function(r) {
-	return new Rectangle(Math.min(this.lt, r.lt), Math.min(this.tp, r.tp),
-						Math.max(this.rt, r.rt), Math.max(this.bm, r.bm));
+	return new Rectangle(Math.min(this.left, r.left), Math.min(this.top, r.top),
+						Math.max(this.right, r.right), Math.max(this.bottom, r.bottom));
 };
 
 // Pre: client will pass all expected parameters to each function and that they
@@ -241,41 +236,14 @@ Rectangle.prototype.union = function(r) {
 // Post: Returns a representing the largest rectangular area that is 
 // contained within both this rectangle and the given other rectangle.
 Rectangle.prototype.intersect = function(r) {
-	if (this.lt < r.lt) {
-		if (this.rt < r.lt || this.bm < r.tp || this.tp > r.bm) {
-			return null;
-		}
-		if (this.tp < r.tp) {
-			if (this.rt > r.rt) {
-				if (this.bm > r.bm) {
-					return new Rectangle(r.lt, r.tp, r.rt, r.bm);
-				} else { //this.bm <= r.bm
-					return new Rectangle(r.lt, r.tp, r.rt, this.bm);
-				}
-			} else {	// this.rt <= r.rt
-				if (this.bm > r.bm) {
-					return new Rectangle(r.lt, r.tp, this.rt, r.bm);
-				} else { //this.bm <= r.bm
-					return new Rectangle(r.lt, r.tp, this.rt, this.bm);
-				}
-			}
-		} else { //this.tp >= r.tp
-			if (this.rt > r.rt) {
-				if (this.bm > r.bm) {
-					return new Rectangle(r.lt, this.tp, r.rt, r.bm);
-				} else { // this.bm <= r.bm
-					return new Rectangle(r.lt, r.tp, r.rt, this.bm);
-				}
-			} else { //this.rt <= r.rt
-				if (this.bm > r.bm) {
-					return new Rectangle(r.lt, this.tp, this.rt, r.bm);
-				} else { // this.bm <= r.bm
-					return new Rectangle(r.lt, this.tp, this.rt, this.bm);
-				}
-			}
-		}
+	var interLeft = Math.max(this.left, r.left);
+	var interTop = Math.max(this.top, r.top);
+	var interRight = Math.min(this.right, r.right);
+	var interBottom = Math.min(this.bottom, r.bottom);
+	if (interLeft > interRight || interTop > interBottom) {
+		return null;
 	} else {
-		return r.intersect(this);
+		return new Rectangle(interLeft, interTop, interRight, interBottom);
 	}
 };
 
@@ -286,11 +254,11 @@ Rectangle.prototype.intersect = function(r) {
 Rectangle.prototype.contains = function(obj) {
 	if (obj.x && obj.y) {
 		print("this is a point");
-		return (this.lt <= obj.x && this.rt >= obj.x && 
-				this.tp <= obj.y && this.bm >= obj.y);
+		return (this.left <= obj.x && this.right >= obj.x && 
+				this.top <= obj.y && this.bottom >= obj.y);
 	} else {
-		return (this.lt <= obj.lt && this.rt >= obj.rt &&
-				this.tp <= obj.tp && this.bm >= obj.bm);
+		return (this.left <= obj.left && this.right >= obj.right &&
+				this.top <= obj.top && this.bottom >= obj.bottom);
 	}
 };
 
