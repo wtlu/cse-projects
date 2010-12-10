@@ -188,12 +188,8 @@ String.prototype.toAlternatingCase = function(firstToLower) {
 // Substitue 4 for A, 3 for E, 1 for I, 0 for O, Z for S. Also convert the string to 
 // Alternating case, starting with the first letter captitalized. 
 String.prototype.toLeetSpeak = function() {
-	var replacedA = this.replace(/A/ig, "4");
-	var replacedE = replacedA.replace(/E/ig, "3");
-	var replacedI = replacedE.replace(/I/ig, "1");
-	var replacedO = replacedI.replace(/O/ig, "0");
-	var replacedS = replacedO.replace(/S/ig, "Z");
-	return replacedS.toAlternatingCase();
+	return this.replace(/A/ig, "4").replace(/E/ig, 
+	"3").replace(/I/ig, "1").replace(/O/ig, "0").replace(/S/ig, "Z").toAlternatingCase();
 };
 
 // Pre: n is valid integer
